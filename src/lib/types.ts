@@ -81,5 +81,4 @@ export interface CreateOrderInput {
 
 export interface Session {
   tenantId: string;
-  employeeId: string;
 }

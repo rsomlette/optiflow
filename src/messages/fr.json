@@ -1,0 +1,129 @@
+{
+  "common": {
+    "appName": "OptiFlow",
+    "signIn": "Se connecter",
+    "signOut": "Se déconnecter",
+    "back": "Retour",
+    "continue": "Continuer",
+    "search": "Rechercher",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "loading": "Chargement...",
+    "noResults": "Aucun résultat"
+  },
+  "landing": {
+    "heroTitle": "Suivez vos commandes de verres de l'{highlight1} au {highlight2}",
+    "heroHighlight1": "ordonnance",
+    "heroHighlight2": "retrait",
+    "heroDescription": "OptiFlow est un tableau Kanban visuel conçu pour les opticiens. Visualisez chaque commande en un coup d'œil, réduisez les délais et gardez toute l'équipe synchronisée — sur n'importe quelle tablette.",
+    "requestDemo": "Demander une démo",
+    "tryItNow": "Essayer maintenant",
+    "contact": "Contact",
+    "featSnapTitle": "Photo & Remplissage auto",
+    "featSnapDesc": "Prenez une photo de l'ordonnance. L'OCR extrait les données automatiquement — pas de saisie manuelle.",
+    "featProgressTitle": "Suivi visuel",
+    "featProgressDesc": "Cinq étapes claires de la commande au retrait. Glissez les fiches entre les colonnes.",
+    "featTeamTitle": "Visibilité d'équipe",
+    "featTeamDesc": "Chaque employé voit le même tableau en temps réel. Fini les post-it et les tableurs.",
+    "stagesTitle": "Cinq étapes, zéro confusion",
+    "footer": "OptiFlow — Conçu pour les opticiens, par des gens qui aiment la clarté."
+  },
+  "contact": {
+    "title": "Nous contacter",
+    "description": "Intéressé par OptiFlow pour votre magasin ? Remplissez le formulaire ci-dessous et nous vous recontacterons pour une démo.",
+    "shopName": "Nom du magasin",
+    "shopNamePlaceholder": "Optique Centrale",
+    "email": "Email",
+    "emailPlaceholder": "contact@votreopticien.fr",
+    "message": "Message",
+    "messagePlaceholder": "Parlez-nous de votre magasin et de vos besoins...",
+    "send": "Envoyer le message",
+    "sending": "Envoi en cours...",
+    "success": "Message envoyé ! Nous vous recontacterons bientôt."
+  },
+  "login": {
+    "title": "Connexion",
+    "description": "Sélectionnez votre magasin et votre employé pour continuer",
+    "shop": "Magasin",
+    "shopPlaceholder": "Sélectionner un magasin",
+    "employee": "Employé",
+    "employeePlaceholder": "Sélectionner un employé",
+    "submit": "Accéder au tableau de bord",
+    "redirecting": "Redirection..."
+  },
+  "dashboard": {
+    "newOrder": "Nouvelle commande",
+    "scanReceived": "Scanner réception"
+  },
+  "stages": {
+    "pending_order": "En attente de commande",
+    "ordered_awaiting_delivery": "Commandé — En attente de livraison",
+    "received_ready_to_assemble": "Reçu — Prêt à assembler",
+    "in_assembly": "En cours d'assemblage",
+    "ready_for_pickup": "Prêt pour le retrait"
+  },
+  "card": {
+    "ocrPending": "OCR en cours",
+    "ocrComplete": "OCR terminé",
+    "manual": "Saisie manuelle",
+    "noOrders": "Aucune commande"
+  },
+  "orderDetail": {
+    "phone": "Téléphone",
+    "assignedTo": "Assigné à",
+    "prescription": "Ordonnance",
+    "frame": "Monture",
+    "lensType": "Type de verre",
+    "notes": "Notes",
+    "notifyClient": "Notifier le client",
+    "markPickedUp": "Marquer comme retiré",
+    "pickedUpSuccess": "Commande de {clientName} marquée comme retirée",
+    "notifySuccess": "Notification envoyée à {clientName}"
+  },
+  "newOrder": {
+    "title": "Nouvelle commande",
+    "assignedEmployee": "Employé assigné",
+    "chooseFlow": "Comment souhaitez-vous saisir l'ordonnance ?",
+    "autoFlow": "Auto (Photo)",
+    "manualFlow": "Saisie manuelle",
+    "capturePrompt": "Prenez une photo de l'ordonnance du médecin",
+    "retake": "Reprendre",
+    "clientName": "Nom du client",
+    "clientNamePlaceholder": "Jean-Pierre Lefèvre",
+    "phone": "Téléphone",
+    "phonePlaceholder": "+33 6 12 34 56 78",
+    "frame": "Monture",
+    "framePlaceholder": "Ray-Ban RB5154 Noir",
+    "lensType": "Type de verre",
+    "lensTypePlaceholder": "Progressif, Unifocal...",
+    "notes": "Notes",
+    "notesPlaceholder": "Notes supplémentaires...",
+    "createOrder": "Créer la commande",
+    "createdSuccess": "Commande créée pour {clientName}"
+  },
+  "scanReceived": {
+    "title": "Scanner les commandes reçues",
+    "description": "Associer une livraison reçue à une commande existante",
+    "scanPackage": "Scanner le colis",
+    "searchByName": "Rechercher par nom",
+    "scanPrompt": "Prenez une photo de l'étiquette du colis",
+    "searchPlaceholder": "Nom du client...",
+    "searching": "Recherche en cours...",
+    "noMatches": "Aucune commande correspondante en attente de livraison",
+    "selectOrder": "Sélectionnez une commande à marquer comme reçue :",
+    "movedSuccess": "Commande déplacée vers Prêt à assembler"
+  },
+  "prescription": {
+    "eye": "Œil",
+    "sph": "SPH",
+    "cyl": "CYL",
+    "axe": "AXE",
+    "add": "ADD",
+    "pd": "EP",
+    "ocrResults": "Résultats OCR",
+    "processing": "Analyse de l'ordonnance..."
+  },
+  "employee": {
+    "assignPlaceholder": "Assigner un employé"
+  }
+}

@@ -2,17 +2,18 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import type { Order } from "@/lib/types";
+import type { Order, OrderStage } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { useElapsedTime } from "@/hooks/use-elapsed-time";
 import { useEmployeeStore } from "@/stores/employee-store";
 
 interface KanbanCardProps {
   order: Order;
+  columnId: OrderStage;
   onClick: () => void;
 }
 
-export function KanbanCard({ order, onClick }: KanbanCardProps) {
+export function KanbanCard({ order, columnId, onClick }: KanbanCardProps) {
   const elapsed = useElapsedTime(order.stageEnteredAt);
   const employees = useEmployeeStore((s) => s.employees);
   const assignee = employees.find((e) => e.id === order.assignedEmployeeId);
@@ -26,7 +27,7 @@ export function KanbanCard({ order, onClick }: KanbanCardProps) {
     isDragging,
   } = useSortable({
     id: order.id,
-    data: { order },
+    data: { type: "card", order, columnId },
   });
 
   const style = {
@@ -34,12 +35,6 @@ export function KanbanCard({ order, onClick }: KanbanCardProps) {
     transition,
     opacity: isDragging ? 0.5 : 1,
   };
-
-  const ocrBadge = {
-    pending: { label: "OCR Pending", variant: "outline" as const, className: "border-yellow-400 text-yellow-700 bg-yellow-50" },
-    complete: { label: "OCR Complete", variant: "outline" as const, className: "border-green-400 text-green-700 bg-green-50" },
-    none: { label: "Manual", variant: "outline" as const, className: "border-blue-400 text-blue-700 bg-blue-50" },
-  }[order.ocrStatus];
 
   return (
     <div
@@ -66,11 +61,7 @@ export function KanbanCard({ order, onClick }: KanbanCardProps) {
       )}
 
       <div className="flex items-center gap-1.5 flex-wrap">
-        {order.stage === "pending_order" && (
-          <Badge variant={ocrBadge.variant} className={ocrBadge.className}>
-            {ocrBadge.label}
-          </Badge>
-        )}
+        <OcrBadge order={order} />
         {order.lensType && (
           <Badge variant="secondary" className="text-xs">
             {order.lensType}
@@ -79,10 +70,33 @@ export function KanbanCard({ order, onClick }: KanbanCardProps) {
       </div>
 
       {assignee && (
-        <div className="mt-2 text-xs text-gray-400">
-          {assignee.name}
-        </div>
+        <div className="mt-2 text-xs text-gray-400">{assignee.name}</div>
       )}
     </div>
+  );
+}
+
+function OcrBadge({ order }: { order: Order }) {
+  if (order.stage !== "pending_order") return null;
+
+  const config = {
+    pending: {
+      label: "OCR Pending",
+      className: "border-yellow-400 text-yellow-700 bg-yellow-50",
+    },
+    complete: {
+      label: "OCR Complete",
+      className: "border-green-400 text-green-700 bg-green-50",
+    },
+    none: {
+      label: "Manual",
+      className: "border-blue-400 text-blue-700 bg-blue-50",
+    },
+  }[order.ocrStatus];
+
+  return (
+    <Badge variant="outline" className={config.className}>
+      {config.label}
+    </Badge>
   );
 }

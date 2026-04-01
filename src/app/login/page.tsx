@@ -12,11 +12,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuthStore } from "@/stores/auth-store";
-import { TenantServiceImpl, EmployeeServiceImpl } from "@/services";
-import type { Tenant, Employee } from "@/lib/types";
+import { TenantServiceImpl } from "@/services";
+import type { Tenant } from "@/lib/types";
 
 const tenantService = new TenantServiceImpl();
-const employeeService = new EmployeeServiceImpl();
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,35 +23,21 @@ export default function LoginPage() {
   const session = useAuthStore((s) => s.session);
 
   const [tenants, setTenants] = useState<Tenant[]>([]);
-  const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedTenant, setSelectedTenant] = useState<string>("");
-  const [selectedEmployee, setSelectedEmployee] = useState<string>("");
 
-  // Redirect if already logged in
   useEffect(() => {
     if (session) {
       router.replace("/dashboard");
     }
   }, [session, router]);
 
-  // Load tenants on mount
   useEffect(() => {
     tenantService.getTenants().then(setTenants);
   }, []);
 
-  // Load employees when tenant changes
-  useEffect(() => {
-    if (selectedTenant) {
-      setSelectedEmployee("");
-      employeeService.getEmployeesByTenant(selectedTenant).then(setEmployees);
-    } else {
-      setEmployees([]);
-    }
-  }, [selectedTenant]);
-
   function handleLogin() {
-    if (!selectedTenant || !selectedEmployee) return;
-    login(selectedTenant, selectedEmployee);
+    if (!selectedTenant) return;
+    login(selectedTenant);
     router.push("/dashboard");
   }
 
@@ -69,7 +54,7 @@ export default function LoginPage() {
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900">Sign In</h1>
             <p className="text-gray-500 mt-1 text-sm">
-              Select your shop and employee to continue
+              Select your shop to continue
             </p>
           </div>
 
@@ -78,7 +63,10 @@ export default function LoginPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Shop
               </label>
-              <Select value={selectedTenant} onValueChange={(v) => setSelectedTenant(v ?? "")}>
+              <Select
+                value={selectedTenant}
+                onValueChange={(v) => setSelectedTenant(v ?? "")}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a shop" />
                 </SelectTrigger>
@@ -92,32 +80,10 @@ export default function LoginPage() {
               </Select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Employee
-              </label>
-              <Select
-                value={selectedEmployee}
-                onValueChange={(v) => setSelectedEmployee(v ?? "")}
-                disabled={!selectedTenant}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select an employee" />
-                </SelectTrigger>
-                <SelectContent>
-                  {employees.map((e) => (
-                    <SelectItem key={e.id} value={e.id}>
-                      {e.name} — {e.role}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
             <Button
               className="w-full"
               onClick={handleLogin}
-              disabled={!selectedTenant || !selectedEmployee}
+              disabled={!selectedTenant}
             >
               Continue to Dashboard
             </Button>

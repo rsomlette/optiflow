@@ -5,13 +5,12 @@ import type { Session } from "@/lib/types";
 
 interface AuthState {
   session: Session | null;
-  login: (tenantId: string, employeeId: string) => void;
+  login: (tenantId: string) => void;
   logout: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   session: null,
-  login: (tenantId, employeeId) =>
-    set({ session: { tenantId, employeeId } }),
+  login: (tenantId) => set({ session: { tenantId } }),
   logout: () => set({ session: null }),
 }));

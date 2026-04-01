@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import {
   DndContext,
   type DragEndEvent,
@@ -11,7 +11,8 @@ import {
   type DragStartEvent,
 } from "@dnd-kit/core";
 import { COLUMNS } from "@/lib/constants";
-import type { Order, OrderStage } from "@/lib/types";
+import type { Order } from "@/lib/types";
+import { resolveTargetStage } from "@/lib/dnd-utils";
 import { useOrders } from "@/hooks/use-orders";
 import { useEmployees } from "@/hooks/use-employees";
 import { useOrderStore } from "@/stores/order-store";
@@ -34,6 +35,11 @@ export function KanbanBoard() {
   const [showNewOrder, setShowNewOrder] = useState(false);
   const [showScanReceived, setShowScanReceived] = useState(false);
 
+  const hasOrdersAwaitingDelivery = useMemo(
+    () => orders.some((o) => o.stage === "ordered_awaiting_delivery"),
+    [orders]
+  );
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -54,13 +60,14 @@ export function KanbanBoard() {
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       setActiveOrder(null);
-      const { active, over } = event;
-      if (!over || !session) return;
 
-      const orderId = active.id as string;
-      const targetStage = over.id as OrderStage;
+      if (!session) return;
 
-      // Only move if dropping on a different column
+      const orderId = event.active.id as string;
+      const targetStage = resolveTargetStage(event.over);
+
+      if (!targetStage) return;
+
       const order = orders.find((o) => o.id === orderId);
       if (!order || order.stage === targetStage) return;
 
@@ -82,6 +89,7 @@ export function KanbanBoard() {
       <Header
         onNewOrder={() => setShowNewOrder(true)}
         onScanReceived={() => setShowScanReceived(true)}
+        scanDisabled={!hasOrdersAwaitingDelivery}
       />
 
       <DndContext
@@ -110,7 +118,11 @@ export function KanbanBoard() {
         <DragOverlay>
           {activeOrder && (
             <div className="w-[280px]">
-              <KanbanCard order={activeOrder} onClick={() => {}} />
+              <KanbanCard
+                order={activeOrder}
+                columnId={activeOrder.stage}
+                onClick={() => {}}
+              />
             </div>
           )}
         </DragOverlay>

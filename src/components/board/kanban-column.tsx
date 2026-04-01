@@ -15,9 +15,14 @@ interface KanbanColumnProps {
   onCardClick: (order: Order) => void;
 }
 
-export function KanbanColumn({ column, orders, onCardClick }: KanbanColumnProps) {
+export function KanbanColumn({
+  column,
+  orders,
+  onCardClick,
+}: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: column.id,
+    data: { type: "column", columnId: column.id },
   });
 
   return (
@@ -26,7 +31,6 @@ export function KanbanColumn({ column, orders, onCardClick }: KanbanColumnProps)
         isOver ? "ring-2 ring-blue-400 ring-offset-2" : ""
       }`}
     >
-      {/* Column Header */}
       <div className="px-3 py-2.5 border-b border-gray-200/50">
         <div className="flex items-center justify-between">
           <h2 className={`font-semibold text-sm ${column.color}`}>
@@ -40,7 +44,6 @@ export function KanbanColumn({ column, orders, onCardClick }: KanbanColumnProps)
         </div>
       </div>
 
-      {/* Card List */}
       <div
         ref={setNodeRef}
         className="flex-1 overflow-y-auto p-2 space-y-2 min-h-[200px]"
@@ -53,6 +56,7 @@ export function KanbanColumn({ column, orders, onCardClick }: KanbanColumnProps)
             <KanbanCard
               key={order.id}
               order={order}
+              columnId={column.id}
               onClick={() => onCardClick(order)}
             />
           ))}

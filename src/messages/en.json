@@ -1,0 +1,129 @@
+{
+  "common": {
+    "appName": "OptiFlow",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "back": "Back",
+    "continue": "Continue",
+    "search": "Search",
+    "cancel": "Cancel",
+    "save": "Save",
+    "loading": "Loading...",
+    "noResults": "No results"
+  },
+  "landing": {
+    "heroTitle": "Track glass orders from {highlight1} to {highlight2}",
+    "heroHighlight1": "prescription",
+    "heroHighlight2": "pickup",
+    "heroDescription": "OptiFlow is a visual Kanban board built for optician shops. See every order at a glance, reduce delays, and keep your whole team in sync — on any tablet.",
+    "requestDemo": "Request a Demo",
+    "tryItNow": "Try It Now",
+    "contact": "Contact",
+    "featSnapTitle": "Snap & Auto-Fill",
+    "featSnapDesc": "Take a photo of the prescription. OCR extracts the data — no manual entry needed.",
+    "featProgressTitle": "Visual Progress",
+    "featProgressDesc": "Five clear stages from order to pickup. Drag cards across columns as work progresses.",
+    "featTeamTitle": "Team Visibility",
+    "featTeamDesc": "Every employee sees the same live board. No more sticky notes or spreadsheets.",
+    "stagesTitle": "Five stages, zero confusion",
+    "footer": "OptiFlow — Built for opticians, by people who care about clarity."
+  },
+  "contact": {
+    "title": "Get in Touch",
+    "description": "Interested in trying OptiFlow for your shop? Fill out the form below and we'll get back to you with a demo.",
+    "shopName": "Shop Name",
+    "shopNamePlaceholder": "Optique Centrale",
+    "email": "Email",
+    "emailPlaceholder": "contact@yourshop.com",
+    "message": "Message",
+    "messagePlaceholder": "Tell us about your shop and what you're looking for...",
+    "send": "Send Message",
+    "sending": "Sending...",
+    "success": "Message sent! We'll be in touch soon."
+  },
+  "login": {
+    "title": "Sign In",
+    "description": "Select your shop and employee to continue",
+    "shop": "Shop",
+    "shopPlaceholder": "Select a shop",
+    "employee": "Employee",
+    "employeePlaceholder": "Select an employee",
+    "submit": "Continue to Dashboard",
+    "redirecting": "Redirecting..."
+  },
+  "dashboard": {
+    "newOrder": "New Order",
+    "scanReceived": "Scan Received"
+  },
+  "stages": {
+    "pending_order": "Pending Order",
+    "ordered_awaiting_delivery": "Ordered — Awaiting Delivery",
+    "received_ready_to_assemble": "Received — Ready to Assemble",
+    "in_assembly": "In Assembly",
+    "ready_for_pickup": "Ready for Pickup"
+  },
+  "card": {
+    "ocrPending": "OCR Pending",
+    "ocrComplete": "OCR Complete",
+    "manual": "Manual",
+    "noOrders": "No orders"
+  },
+  "orderDetail": {
+    "phone": "Phone",
+    "assignedTo": "Assigned To",
+    "prescription": "Prescription",
+    "frame": "Frame",
+    "lensType": "Lens Type",
+    "notes": "Notes",
+    "notifyClient": "Notify Client",
+    "markPickedUp": "Mark as Picked Up",
+    "pickedUpSuccess": "Order for {clientName} marked as picked up",
+    "notifySuccess": "Notification sent to {clientName}"
+  },
+  "newOrder": {
+    "title": "New Order",
+    "assignedEmployee": "Assigned Employee",
+    "chooseFlow": "How would you like to enter the prescription?",
+    "autoFlow": "Auto (Photo)",
+    "manualFlow": "Manual Entry",
+    "capturePrompt": "Take a photo of the doctor's prescription",
+    "retake": "Retake",
+    "clientName": "Client Name",
+    "clientNamePlaceholder": "Jean-Pierre Lefèvre",
+    "phone": "Phone",
+    "phonePlaceholder": "+33 6 12 34 56 78",
+    "frame": "Frame",
+    "framePlaceholder": "Ray-Ban RB5154 Black",
+    "lensType": "Lens Type",
+    "lensTypePlaceholder": "Progressive, Single Vision...",
+    "notes": "Notes",
+    "notesPlaceholder": "Any additional notes...",
+    "createOrder": "Create Order",
+    "createdSuccess": "Order created for {clientName}"
+  },
+  "scanReceived": {
+    "title": "Scan Received Orders",
+    "description": "Match a received delivery to an existing order",
+    "scanPackage": "Scan Package",
+    "searchByName": "Search by Name",
+    "scanPrompt": "Take a photo of the delivery package label",
+    "searchPlaceholder": "Client name...",
+    "searching": "Searching...",
+    "noMatches": "No matching orders awaiting delivery",
+    "selectOrder": "Select an order to mark as received:",
+    "movedSuccess": "Order moved to Ready to Assemble"
+  },
+  "prescription": {
+    "eye": "Eye",
+    "sph": "SPH",
+    "cyl": "CYL",
+    "axe": "AXE",
+    "add": "ADD",
+    "pd": "PD",
+    "ocrResults": "OCR Results",
+    "processing": "Processing prescription..."
+  },
+  "employee": {
+    "assignPlaceholder": "Assign employee"
+  }
+}

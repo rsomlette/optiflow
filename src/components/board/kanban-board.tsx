@@ -100,9 +100,13 @@ export function KanbanBoard() {
         <div className="flex-1 overflow-hidden p-4">
           <div className="grid grid-cols-5 gap-3 h-full">
             {COLUMNS.map((column) => {
-              const columnOrders = orders.filter(
-                (o) => o.stage === column.id
-              );
+              const columnOrders = orders
+                .filter((o) => o.stage === column.id)
+                .sort(
+                  (a, b) =>
+                    new Date(a.stageEnteredAt).getTime() -
+                    new Date(b.stageEnteredAt).getTime()
+                );
               return (
                 <KanbanColumn
                   key={column.id}

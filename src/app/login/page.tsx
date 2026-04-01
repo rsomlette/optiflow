@@ -23,7 +23,7 @@ export default function LoginPage() {
   const session = useAuthStore((s) => s.session);
 
   const [tenants, setTenants] = useState<Tenant[]>([]);
-  const [selectedTenant, setSelectedTenant] = useState<string>("");
+  const [selectedTenant, setSelectedTenant] = useState<string | null>(null);
 
   useEffect(() => {
     if (session) {
@@ -65,7 +65,7 @@ export default function LoginPage() {
               </label>
               <Select
                 value={selectedTenant}
-                onValueChange={(v) => setSelectedTenant(v ?? "")}
+                onValueChange={(v) => setSelectedTenant(v)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a shop" />

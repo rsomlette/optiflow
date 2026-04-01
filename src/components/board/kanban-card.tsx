@@ -33,7 +33,7 @@ export function KanbanCard({ order, columnId, onClick }: KanbanCardProps) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.4 : 1,
   };
 
   return (
@@ -43,7 +43,7 @@ export function KanbanCard({ order, columnId, onClick }: KanbanCardProps) {
       {...attributes}
       {...listeners}
       onClick={onClick}
-      className="bg-white rounded-lg border border-gray-200 p-3 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow touch-manipulation"
+      className="bg-white rounded-lg border border-gray-200 p-3 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-150 touch-manipulation"
     >
       <div className="flex items-start justify-between gap-2 mb-2">
         <h3 className="font-semibold text-sm text-gray-900 truncate">

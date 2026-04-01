@@ -27,7 +27,7 @@ export function KanbanColumn({
 
   return (
     <div
-      className={`flex flex-col min-w-[280px] w-[280px] shrink-0 rounded-xl border-2 ${column.borderColor} ${column.bgColor} transition-colors ${
+      className={`flex flex-col min-w-0 rounded-xl border-2 ${column.borderColor} ${column.bgColor} transition-colors ${
         isOver ? "ring-2 ring-blue-400 ring-offset-2" : ""
       }`}
     >

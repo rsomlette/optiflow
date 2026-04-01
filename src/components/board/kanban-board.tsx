@@ -97,8 +97,8 @@ export function KanbanBoard() {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex-1 overflow-x-auto overflow-y-hidden p-4">
-          <div className="flex gap-4 h-full">
+        <div className="flex-1 overflow-hidden p-4">
+          <div className="grid grid-cols-5 gap-3 h-full">
             {COLUMNS.map((column) => {
               const columnOrders = orders.filter(
                 (o) => o.stage === column.id
@@ -115,9 +115,9 @@ export function KanbanBoard() {
           </div>
         </div>
 
-        <DragOverlay>
+        <DragOverlay dropAnimation={null}>
           {activeOrder && (
-            <div className="w-[280px]">
+            <div className="rotate-2 scale-105 shadow-xl rounded-lg">
               <KanbanCard
                 order={activeOrder}
                 columnId={activeOrder.stage}

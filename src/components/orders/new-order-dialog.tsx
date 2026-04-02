@@ -10,12 +10,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { tokens } from "@/lib/theme";
 import { EmployeeSelect } from "@/components/employees/employee-select";
 import { PrescriptionCamera } from "./prescription-camera";
 import { PrescriptionPreview } from "./prescription-preview";
 import { useOrderStore } from "@/stores/order-store";
 import { useAuthStore } from "@/stores/auth-store";
-import { useTheme } from "@/stores/theme-store";
 import { OcrServiceImpl } from "@/services";
 import type { PrescriptionData, EntryMode, OcrStatus } from "@/lib/types";
 import { toast } from "sonner";
@@ -30,14 +30,13 @@ interface NewOrderDialogProps {
 type Step = "choose" | "camera" | "preview" | "form";
 
 export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
-  const t = useTheme();
   const session = useAuthStore((s) => s.session);
   const createOrder = useOrderStore((s) => s.createOrder);
 
   const [step, setStep] = useState<Step>("choose");
   const [entryMode, setEntryMode] = useState<EntryMode>("auto");
   const [assignedEmployeeId, setAssignedEmployeeId] = useState("");
-  const [imageUrl, setImageUrl] = useState<string>("");
+  const [imageUrl, setImageUrl] = useState("");
   const [ocrData, setOcrData] = useState<PrescriptionData | null>(null);
   const [ocrLoading, setOcrLoading] = useState(false);
 
@@ -61,10 +60,7 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
     setNotes("");
   }
 
-  function handleClose() {
-    reset();
-    onClose();
-  }
+  function handleClose() { reset(); onClose(); }
 
   function handleChoose(mode: EntryMode) {
     setEntryMode(mode);
@@ -87,9 +83,7 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
     if (!session || !clientName.trim() || !assignedEmployeeId) return;
 
     let ocrStatus: OcrStatus = "none";
-    if (entryMode === "auto") {
-      ocrStatus = ocrData ? "complete" : "pending";
-    }
+    if (entryMode === "auto") ocrStatus = ocrData ? "complete" : "pending";
 
     await createOrder(session.tenantId, {
       clientName: clientName.trim(),
@@ -117,37 +111,23 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
 
         {step === "choose" && (
           <div className="space-y-4">
-            <div>
-              <label className={`block ${t.fontSize.label} ${t.text.secondary} mb-1`}>
-                Assigned Employee
-              </label>
-              <EmployeeSelect
-                value={assignedEmployeeId}
-                onChange={setAssignedEmployeeId}
-              />
-            </div>
+            <FormField label="Assigned Employee">
+              <EmployeeSelect value={assignedEmployeeId} onChange={setAssignedEmployeeId} />
+            </FormField>
 
             {assignedEmployeeId && (
               <div className="space-y-2">
-                <p className={`${t.fontSize.body} ${t.text.muted}`}>
+                <p className={`${tokens.fontSize.body} text-text-muted`}>
                   How would you like to enter the prescription?
                 </p>
                 <div className="grid grid-cols-2 gap-3">
-                  <Button
-                    variant="outline"
-                    className="h-20 flex-col gap-1"
-                    onClick={() => handleChoose("auto")}
-                  >
+                  <Button variant="outline" className="h-20 flex-col gap-1" onClick={() => handleChoose("auto")}>
                     <span className="text-lg">📸</span>
-                    <span className={t.fontSize.body}>Auto (Photo)</span>
+                    <span className={tokens.fontSize.body}>Auto (Photo)</span>
                   </Button>
-                  <Button
-                    variant="outline"
-                    className="h-20 flex-col gap-1"
-                    onClick={() => handleChoose("manual")}
-                  >
+                  <Button variant="outline" className="h-20 flex-col gap-1" onClick={() => handleChoose("manual")}>
                     <span className="text-lg">✏️</span>
-                    <span className={t.fontSize.body}>Manual Entry</span>
+                    <span className={tokens.fontSize.body}>Manual Entry</span>
                   </Button>
                 </div>
               </div>
@@ -157,38 +137,19 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
 
         {step === "camera" && (
           <div className="space-y-4">
-            <p className={`${t.fontSize.body} ${t.text.muted}`}>
-              Take a photo of the doctor&apos;s prescription
-            </p>
+            <p className={`${tokens.fontSize.body} text-text-muted`}>Take a photo of the doctor&apos;s prescription</p>
             <PrescriptionCamera onCapture={handleCapture} />
-            <Button variant="ghost" onClick={() => setStep("choose")}>
-              Back
-            </Button>
+            <Button variant="ghost" onClick={() => setStep("choose")}>Back</Button>
           </div>
         )}
 
         {step === "preview" && (
           <div className="space-y-4">
-            <PrescriptionPreview
-              imageUrl={imageUrl}
-              data={ocrData}
-              isLoading={ocrLoading}
-            />
+            <PrescriptionPreview imageUrl={imageUrl} data={ocrData} isLoading={ocrLoading} />
             {!ocrLoading && (
               <div className="flex gap-2">
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setImageUrl("");
-                    setOcrData(null);
-                    setStep("camera");
-                  }}
-                >
-                  Retake
-                </Button>
-                <Button className="flex-1" onClick={() => setStep("form")}>
-                  Continue
-                </Button>
+                <Button variant="ghost" onClick={() => { setImageUrl(""); setOcrData(null); setStep("camera"); }}>Retake</Button>
+                <Button className="flex-1" onClick={() => setStep("form")}>Continue</Button>
               </div>
             )}
           </div>
@@ -197,63 +158,23 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
         {step === "form" && (
           <div className="space-y-4">
             <FormField label="Client Name *">
-              <Input
-                value={clientName}
-                onChange={(e) => setClientName(e.target.value)}
-                placeholder="Jean-Pierre Lefèvre"
-              />
+              <Input value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Jean-Pierre Lefèvre" />
             </FormField>
-
             <FormField label="Phone">
-              <Input
-                value={clientPhone}
-                onChange={(e) => setClientPhone(e.target.value)}
-                placeholder="+33 6 12 34 56 78"
-                type="tel"
-              />
+              <Input value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} placeholder="+33 6 12 34 56 78" type="tel" />
             </FormField>
-
             <FormField label="Frame">
-              <Input
-                value={frameDescription}
-                onChange={(e) => setFrameDescription(e.target.value)}
-                placeholder="Ray-Ban RB5154 Black"
-              />
+              <Input value={frameDescription} onChange={(e) => setFrameDescription(e.target.value)} placeholder="Ray-Ban RB5154 Black" />
             </FormField>
-
             <FormField label="Lens Type">
-              <Input
-                value={lensType}
-                onChange={(e) => setLensType(e.target.value)}
-                placeholder="Progressive, Single Vision..."
-              />
+              <Input value={lensType} onChange={(e) => setLensType(e.target.value)} placeholder="Progressive, Single Vision..." />
             </FormField>
-
             <FormField label="Notes">
-              <Textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Any additional notes..."
-                rows={2}
-              />
+              <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Any additional notes..." rows={2} />
             </FormField>
-
             <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                onClick={() =>
-                  setStep(entryMode === "auto" ? "preview" : "choose")
-                }
-              >
-                Back
-              </Button>
-              <Button
-                className="flex-1"
-                onClick={handleSubmit}
-                disabled={!clientName.trim() || !assignedEmployeeId}
-              >
-                Create Order
-              </Button>
+              <Button variant="ghost" onClick={() => setStep(entryMode === "auto" ? "preview" : "choose")}>Back</Button>
+              <Button className="flex-1" onClick={handleSubmit} disabled={!clientName.trim() || !assignedEmployeeId}>Create Order</Button>
             </div>
           </div>
         )}
@@ -262,19 +183,10 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
   );
 }
 
-function FormField({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  const t = useTheme();
+function FormField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className={`block ${t.fontSize.label} ${t.text.secondary} mb-1`}>
-        {label}
-      </label>
+      <label className={`block ${tokens.fontSize.label} text-text-secondary mb-1`}>{label}</label>
       {children}
     </div>
   );

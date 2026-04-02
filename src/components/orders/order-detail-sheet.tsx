@@ -13,10 +13,10 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { Order } from "@/lib/types";
 import { ORDER_STAGE_LABELS } from "@/lib/types";
+import { tokens } from "@/lib/theme";
 import { useElapsedTime } from "@/hooks/use-elapsed-time";
 import { useOrderStore } from "@/stores/order-store";
 import { useAuthStore } from "@/stores/auth-store";
-import { useTheme } from "@/stores/theme-store";
 import { EmployeeSelect } from "@/components/employees/employee-select";
 import { toast } from "sonner";
 
@@ -26,7 +26,6 @@ interface OrderDetailSheetProps {
 }
 
 export function OrderDetailSheet({ order, onClose }: OrderDetailSheetProps) {
-  const t = useTheme();
   const session = useAuthStore((s) => s.session);
   const archiveOrder = useOrderStore((s) => s.archiveOrder);
   const assignEmployee = useOrderStore((s) => s.assignEmployee);
@@ -47,8 +46,8 @@ export function OrderDetailSheet({ order, onClose }: OrderDetailSheetProps) {
               className="flex flex-col items-center justify-center py-12"
             >
               <SuccessCheckmark />
-              <p className={`text-lg font-semibold ${t.text.primary}`}>Picked up!</p>
-              <p className={`${t.fontSize.body} ${t.text.muted}`}>{order.clientName}</p>
+              <p className={`${tokens.fontSize.subheading} text-text-primary`}>Picked up!</p>
+              <p className={`${tokens.fontSize.body} text-text-muted`}>{order.clientName}</p>
             </motion.div>
           ) : (
             <motion.div key="detail" exit={{ opacity: 0, scale: 0.95 }}>
@@ -99,37 +98,27 @@ function OrderDetailContent({
   onNotify: () => void;
   onAssign: (employeeId: string) => void;
 }) {
-  const t = useTheme();
-
   return (
     <div className="space-y-4">
       <StatusRow order={order} />
 
       <div className="grid grid-cols-2 gap-4">
-        {order.clientPhone && (
-          <InfoField label="Phone" value={order.clientPhone} />
-        )}
-        {order.frameDescription && (
-          <InfoField label="Frame" value={order.frameDescription} />
-        )}
-        {order.lensType && (
-          <InfoField label="Lens Type" value={order.lensType} />
-        )}
+        {order.clientPhone && <InfoField label="Phone" value={order.clientPhone} />}
+        {order.frameDescription && <InfoField label="Frame" value={order.frameDescription} />}
+        {order.lensType && <InfoField label="Lens Type" value={order.lensType} />}
       </div>
 
       <Separator />
 
       <div>
-        <div className={`${t.fontSize.caption} font-medium ${t.text.muted} mb-1.5`}>
+        <div className={`${tokens.fontSize.caption} font-medium text-text-muted mb-1.5`}>
           Assigned To
         </div>
         <EmployeeSelect value={order.assignedEmployeeId} onChange={onAssign} />
       </div>
 
       <Separator />
-
       <PrescriptionTable order={order} />
-
       {order.notes && <InfoField label="Notes" value={order.notes} />}
 
       {order.stage === "ready_for_pickup" && (
@@ -151,53 +140,40 @@ function OrderDetailContent({
 
 function StatusRow({ order }: { order: Order }) {
   const elapsed = useElapsedTime(order.stageEnteredAt);
-
   return (
     <div className="flex items-center gap-2">
       <Badge variant="outline">{ORDER_STAGE_LABELS[order.stage]}</Badge>
-      <Badge variant="secondary" className="text-xs">
-        {elapsed}
-      </Badge>
+      <Badge variant="secondary" className={tokens.fontSize.caption}>{elapsed}</Badge>
     </div>
   );
 }
 
 function InfoField({ label, value }: { label: string; value: string }) {
-  const t = useTheme();
-
   return (
     <div>
-      <div className={`${t.fontSize.caption} font-medium ${t.text.muted}`}>{label}</div>
-      <div className={`${t.fontSize.body} mt-0.5`}>{value}</div>
+      <div className={`${tokens.fontSize.caption} font-medium text-text-muted`}>{label}</div>
+      <div className={`${tokens.fontSize.body} mt-0.5`}>{value}</div>
     </div>
   );
 }
 
 function PrescriptionTable({ order }: { order: Order }) {
-  const t = useTheme();
   const { prescriptionData: rx } = order;
-  const hasData =
-    rx.odSphere != null ||
-    rx.osSphere != null ||
-    rx.odCylinder != null ||
-    rx.osCylinder != null;
-
+  const hasData = rx.odSphere != null || rx.osSphere != null;
   if (!hasData) return null;
 
   return (
     <div>
-      <div className={`${t.fontSize.caption} font-medium ${t.text.muted} mb-1.5`}>
-        Prescription
-      </div>
-      <div className={`${t.fontSize.caption} border ${t.radius.card} overflow-hidden`}>
+      <div className={`${tokens.fontSize.caption} font-medium text-text-muted mb-1.5`}>Prescription</div>
+      <div className={`${tokens.fontSize.caption} border ${tokens.radius.card} overflow-hidden`}>
         <table className="w-full">
           <thead>
-            <tr className={t.surfaceMuted}>
-              <th className={`px-3 py-1.5 text-left font-medium ${t.text.muted}`}>Eye</th>
-              <th className={`px-3 py-1.5 text-right font-medium ${t.text.muted}`}>SPH</th>
-              <th className={`px-3 py-1.5 text-right font-medium ${t.text.muted}`}>CYL</th>
-              <th className={`px-3 py-1.5 text-right font-medium ${t.text.muted}`}>AXE</th>
-              <th className={`px-3 py-1.5 text-right font-medium ${t.text.muted}`}>ADD</th>
+            <tr className="bg-surface-muted">
+              <th className="px-3 py-1.5 text-left font-medium text-text-muted">Eye</th>
+              <th className="px-3 py-1.5 text-right font-medium text-text-muted">SPH</th>
+              <th className="px-3 py-1.5 text-right font-medium text-text-muted">CYL</th>
+              <th className="px-3 py-1.5 text-right font-medium text-text-muted">AXE</th>
+              <th className="px-3 py-1.5 text-right font-medium text-text-muted">ADD</th>
             </tr>
           </thead>
           <tbody>
@@ -218,8 +194,8 @@ function PrescriptionTable({ order }: { order: Order }) {
           </tbody>
         </table>
         {rx.pd && (
-          <div className={`border-t px-3 py-1.5 ${t.surfaceMuted}`}>
-            <span className={`font-medium ${t.text.muted}`}>PD:</span> {rx.pd}mm
+          <div className="border-t px-3 py-1.5 bg-surface-muted">
+            <span className="font-medium text-text-muted">PD:</span> {rx.pd}mm
           </div>
         )}
       </div>
@@ -228,22 +204,14 @@ function PrescriptionTable({ order }: { order: Order }) {
 }
 
 function SuccessCheckmark() {
-  const t = useTheme();
-
   return (
     <motion.div
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}
-      className={`w-16 h-16 rounded-full ${t.brandBg} flex items-center justify-center mb-4`}
+      className="w-16 h-16 rounded-full bg-brand-bg flex items-center justify-center mb-4"
     >
-      <svg
-        className={`w-8 h-8 ${t.brand}`}
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={3}
-      >
+      <svg className="w-8 h-8 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
         <motion.path
           initial={{ pathLength: 0 }}
           animate={{ pathLength: 1 }}

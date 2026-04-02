@@ -13,12 +13,12 @@ import {
 } from "@dnd-kit/core";
 import { ORDER_STAGES } from "@/lib/types";
 import type { Order } from "@/lib/types";
+import { tokens } from "@/lib/theme";
 import { resolveTargetStage } from "@/lib/dnd-utils";
 import { useOrders } from "@/hooks/use-orders";
 import { useEmployees } from "@/hooks/use-employees";
 import { useOrderStore } from "@/stores/order-store";
 import { useAuthStore } from "@/stores/auth-store";
-import { useTheme } from "@/stores/theme-store";
 import { Header } from "@/components/layout/header";
 import { KanbanColumn } from "./kanban-column";
 import { KanbanCard } from "./kanban-card";
@@ -27,7 +27,6 @@ import { NewOrderDialog } from "@/components/orders/new-order-dialog";
 import { ScanReceivedDialog } from "@/components/scan/scan-received-dialog";
 
 export function KanbanBoard() {
-  const t = useTheme();
   const session = useAuthStore((s) => s.session);
   const { orders, isLoading } = useOrders();
   useEmployees();
@@ -79,7 +78,7 @@ export function KanbanBoard() {
 
   if (isLoading) {
     return (
-      <div className={`flex-1 flex items-center justify-center ${t.text.dimmed}`}>
+      <div className="flex-1 flex items-center justify-center text-text-dimmed">
         Loading orders...
       </div>
     );
@@ -98,8 +97,8 @@ export function KanbanBoard() {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className={`flex-1 overflow-hidden ${t.spacing.section}`}>
-          <div className={`grid grid-cols-5 ${t.spacing.gap} h-full`}>
+        <div className={`flex-1 overflow-hidden ${tokens.spacing.section}`}>
+          <div className={`grid grid-cols-5 ${tokens.spacing.gap} h-full`}>
             {ORDER_STAGES.map((stage, i) => {
               const columnOrders = orders
                 .filter((o) => o.stage === stage)
@@ -112,7 +111,7 @@ export function KanbanBoard() {
                 <KanbanColumn
                   key={stage}
                   stage={stage}
-                  colors={t.columns[i]}
+                  columnIndex={i}
                   orders={columnOrders}
                   onCardClick={setSelectedOrder}
                 />
@@ -123,7 +122,7 @@ export function KanbanBoard() {
 
         <DragOverlay dropAnimation={null}>
           {activeOrder && (
-            <div className={`rotate-2 scale-105 ${t.shadow.overlay} ${t.radius.card}`}>
+            <div className={`rotate-2 scale-105 ${tokens.shadow.overlay} ${tokens.radius.card}`}>
               <KanbanCard
                 order={activeOrder}
                 columnId={activeOrder.stage}

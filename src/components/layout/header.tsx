@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/auth-store";
-import { useTheme } from "@/stores/theme-store";
 import { ThemeSwitcher } from "./theme-switcher";
 
 interface HeaderProps {
@@ -17,7 +16,6 @@ export function Header({
   onScanReceived,
   scanDisabled,
 }: HeaderProps) {
-  const t = useTheme();
   const router = useRouter();
   const logout = useAuthStore((s) => s.logout);
 
@@ -27,8 +25,8 @@ export function Header({
   }
 
   return (
-    <header className={`flex items-center justify-between px-4 py-3 ${t.surface} border-b ${t.border.default} shrink-0`}>
-      <h1 className={`text-xl font-bold ${t.brand}`}>OptiFlow</h1>
+    <header className="flex items-center justify-between px-4 py-3 bg-surface border-b border-border shrink-0">
+      <h1 className="text-xl font-bold text-brand">OptiFlow</h1>
 
       <div className="flex items-center gap-2">
         <ThemeSwitcher />

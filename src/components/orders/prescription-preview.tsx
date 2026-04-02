@@ -1,7 +1,7 @@
 "use client";
 
 import type { PrescriptionData } from "@/lib/types";
-import { useTheme } from "@/stores/theme-store";
+import { tokens } from "@/lib/theme";
 
 interface PrescriptionPreviewProps {
   imageUrl: string;
@@ -9,41 +9,27 @@ interface PrescriptionPreviewProps {
   isLoading: boolean;
 }
 
-export function PrescriptionPreview({
-  imageUrl,
-  data,
-  isLoading,
-}: PrescriptionPreviewProps) {
-  const t = useTheme();
-
+export function PrescriptionPreview({ imageUrl, data, isLoading }: PrescriptionPreviewProps) {
   return (
     <div className="space-y-3">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={imageUrl}
-        alt="Prescription"
-        className={`w-full max-h-48 object-contain ${t.radius.card} border`}
-      />
+      <img src={imageUrl} alt="Prescription" className={`w-full max-h-48 object-contain ${tokens.radius.card} border`} />
 
       {isLoading && (
-        <div className={`text-center ${t.fontSize.body} ${t.text.muted} py-2`}>
-          Processing prescription...
-        </div>
+        <div className={`text-center ${tokens.fontSize.body} text-text-muted py-2`}>Processing prescription...</div>
       )}
 
       {data && !isLoading && (
-        <div className={`${t.fontSize.caption} border ${t.radius.card} overflow-hidden`}>
-          <div className={`${t.status.ocrComplete} px-2 py-1 font-medium`}>
-            OCR Results
-          </div>
+        <div className={`${tokens.fontSize.caption} border ${tokens.radius.card} overflow-hidden`}>
+          <div className="bg-status-complete-bg text-status-complete px-2 py-1 font-medium">OCR Results</div>
           <table className="w-full">
             <thead>
-              <tr className={t.surfaceMuted}>
-                <th className={`px-2 py-1 text-left ${t.text.muted}`}>Eye</th>
-                <th className={`px-2 py-1 text-right ${t.text.muted}`}>SPH</th>
-                <th className={`px-2 py-1 text-right ${t.text.muted}`}>CYL</th>
-                <th className={`px-2 py-1 text-right ${t.text.muted}`}>AXE</th>
-                <th className={`px-2 py-1 text-right ${t.text.muted}`}>ADD</th>
+              <tr className="bg-surface-muted">
+                <th className="px-2 py-1 text-left text-text-muted">Eye</th>
+                <th className="px-2 py-1 text-right text-text-muted">SPH</th>
+                <th className="px-2 py-1 text-right text-text-muted">CYL</th>
+                <th className="px-2 py-1 text-right text-text-muted">AXE</th>
+                <th className="px-2 py-1 text-right text-text-muted">ADD</th>
               </tr>
             </thead>
             <tbody>
@@ -65,7 +51,7 @@ export function PrescriptionPreview({
           </table>
           {data.pd && (
             <div className="border-t px-2 py-1">
-              <span className={t.text.muted}>PD:</span> {data.pd}mm
+              <span className="text-text-muted">PD:</span> {data.pd}mm
             </div>
           )}
         </div>

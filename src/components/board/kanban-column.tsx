@@ -5,22 +5,24 @@ import { useDroppable } from "@dnd-kit/core";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Order, OrderStage } from "@/lib/types";
 import { ORDER_STAGE_LABELS } from "@/lib/types";
-import type { ColumnColors } from "@/lib/theme";
+import { columnClasses, tokens } from "@/lib/theme";
 import { KanbanCard } from "./kanban-card";
 
 interface KanbanColumnProps {
   stage: OrderStage;
-  colors: ColumnColors;
+  columnIndex: number;
   orders: Order[];
   onCardClick: (order: Order) => void;
 }
 
 export function KanbanColumn({
   stage,
-  colors,
+  columnIndex,
   orders,
   onCardClick,
 }: KanbanColumnProps) {
+  const col = columnClasses[columnIndex];
+
   const { setNodeRef, isOver } = useDroppable({
     id: stage,
     data: { type: "column", columnId: stage },
@@ -41,18 +43,16 @@ export function KanbanColumn({
 
   return (
     <div
-      className={`flex flex-col min-w-0 min-h-0 h-full rounded-xl border-2 ${colors.border} ${colors.bg} transition-colors ${
-        isOver ? `ring-2 ${colors.ring} ring-offset-2 animate-column-glow` : ""
+      className={`flex flex-col min-w-0 min-h-0 h-full ${tokens.radius.column} border-2 ${col.border} ${col.bg} transition-colors ${
+        isOver ? `ring-2 ${col.ring} ring-offset-2 animate-column-glow` : ""
       }`}
     >
-      <div className="px-3 py-2.5 border-b border-gray-200/50">
+      <div className="px-3 py-2.5 border-b border-border/30">
         <div className="flex items-center justify-between">
-          <h2 className={`text-sm font-semibold ${colors.text}`}>
+          <h2 className={`${tokens.fontSize.columnTitle} ${col.text}`}>
             {ORDER_STAGE_LABELS[stage]}
           </h2>
-          <span
-            className={`text-xs font-medium px-2 py-0.5 rounded-full ${colors.bg} ${colors.text}`}
-          >
+          <span className={`${tokens.fontSize.caption} font-medium px-2 py-0.5 ${tokens.radius.badge} ${col.bg} ${col.text}`}>
             {orders.length}
           </span>
         </div>
@@ -65,7 +65,7 @@ export function KanbanColumn({
             setNodeRef(node);
           }}
           onScroll={checkScroll}
-          className="absolute inset-0 overflow-y-auto overscroll-contain p-2 space-y-2"
+          className={`absolute inset-0 overflow-y-auto overscroll-contain ${tokens.spacing.column} space-y-2`}
         >
           <AnimatePresence mode="popLayout">
             {orders.map((order) => (
@@ -83,7 +83,7 @@ export function KanbanColumn({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4, duration: 0.3 }}
-              className={`flex items-center justify-center h-24 ${colors.text} opacity-40 text-sm`}
+              className={`flex items-center justify-center h-24 ${tokens.fontSize.body} ${col.text} opacity-40`}
             >
               No orders
             </motion.div>
@@ -91,8 +91,8 @@ export function KanbanColumn({
         </div>
 
         {hasMore && (
-          <div className={`absolute bottom-0 left-0 right-0 h-12 pointer-events-none backdrop-blur-sm ${colors.bg}/70 rounded-b-xl flex items-end justify-center pb-2`}>
-            <span className={`text-xs font-medium ${colors.text}`}>↓ more</span>
+          <div className={`absolute bottom-0 left-0 right-0 h-12 pointer-events-none backdrop-blur-sm ${col.bg}/70 rounded-b-xl flex items-end justify-center pb-2`}>
+            <span className={`${tokens.fontSize.caption} font-medium ${col.text}`}>↓ more</span>
           </div>
         )}
       </div>

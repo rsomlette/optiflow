@@ -5,10 +5,10 @@ import { useDraggable } from "@dnd-kit/core";
 import { motion } from "framer-motion";
 import type { Order, OrderStage } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
+import { tokens } from "@/lib/theme";
 import { useElapsedTime } from "@/hooks/use-elapsed-time";
 import { useEmployeeStore } from "@/stores/employee-store";
 import { useOrderStore } from "@/stores/order-store";
-import { useTheme } from "@/stores/theme-store";
 
 interface KanbanCardProps {
   order: Order;
@@ -17,7 +17,6 @@ interface KanbanCardProps {
 }
 
 export function KanbanCard({ order, columnId, onClick }: KanbanCardProps) {
-  const t = useTheme();
   const elapsed = useElapsedTime(order.stageEnteredAt);
   const employees = useEmployeeStore((s) => s.employees);
   const assignee = employees.find((e) => e.id === order.assignedEmployeeId);
@@ -52,12 +51,11 @@ export function KanbanCard({ order, columnId, onClick }: KanbanCardProps) {
     ? { transform: `translate(${transform.x}px, ${transform.y}px)` }
     : undefined;
 
-  // Show a ghost placeholder while dragging
   if (isDragging) {
     return (
       <div
         ref={setNodeRef}
-        className={`${t.radius.card} border-2 border-dashed ${t.border.default} ${t.spacing.card} opacity-30`}
+        className={`${tokens.radius.card} border-2 border-dashed border-border ${tokens.spacing.card} opacity-30`}
         style={{ minHeight: 80 }}
       />
     );
@@ -75,23 +73,23 @@ export function KanbanCard({ order, columnId, onClick }: KanbanCardProps) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95, y: -8, transition: { duration: 0.5, ease: "easeOut" } }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
-      className={`${t.surface} ${t.radius.card} ${t.border.default} border ${t.spacing.card} ${t.shadow.card} cursor-grab active:cursor-grabbing hover:shadow-md hover:-translate-y-0.5 transition-shadow duration-150 touch-manipulation select-none relative overflow-hidden`}
+      className={`bg-surface ${tokens.radius.card} border border-border ${tokens.spacing.card} ${tokens.shadow.card} cursor-grab active:cursor-grabbing hover:shadow-md hover:-translate-y-0.5 transition-shadow duration-150 touch-manipulation select-none relative overflow-hidden`}
     >
       {showShimmer && (
         <div className="absolute inset-0 animate-shimmer pointer-events-none" />
       )}
 
       <div className="flex items-start justify-between gap-2 mb-2">
-        <h3 className={`font-semibold ${t.fontSize.body} ${t.text.primary} truncate`}>
+        <h3 className={`font-semibold ${tokens.fontSize.body} text-text-primary truncate`}>
           {order.clientName}
         </h3>
-        <span className={`${t.fontSize.caption} ${t.text.dimmed} whitespace-nowrap`}>
+        <span className={`${tokens.fontSize.caption} text-text-dimmed whitespace-nowrap`}>
           {elapsed}
         </span>
       </div>
 
       {order.frameDescription && (
-        <p className={`${t.fontSize.caption} ${t.text.muted} mb-2 truncate`}>
+        <p className={`${tokens.fontSize.caption} text-text-muted mb-2 truncate`}>
           {order.frameDescription}
         </p>
       )}
@@ -99,14 +97,14 @@ export function KanbanCard({ order, columnId, onClick }: KanbanCardProps) {
       <div className="flex items-center gap-1.5 flex-wrap">
         <OcrBadge order={order} />
         {order.lensType && (
-          <Badge variant="secondary" className={t.fontSize.caption}>
+          <Badge variant="secondary" className={tokens.fontSize.caption}>
             {order.lensType}
           </Badge>
         )}
       </div>
 
       {assignee && (
-        <div className={`mt-2 ${t.fontSize.caption} ${t.text.dimmed}`}>
+        <div className={`mt-2 ${tokens.fontSize.caption} text-text-dimmed`}>
           {assignee.name}
         </div>
       )}
@@ -115,13 +113,12 @@ export function KanbanCard({ order, columnId, onClick }: KanbanCardProps) {
 }
 
 function OcrBadge({ order }: { order: Order }) {
-  const t = useTheme();
   if (order.stage !== "pending_order") return null;
 
-  const statusClass = {
-    pending: t.status.ocrPending,
-    complete: t.status.ocrComplete,
-    none: t.status.manual,
+  const config = {
+    pending: "border-status-pending-border text-status-pending bg-status-pending-bg",
+    complete: "border-status-complete-border text-status-complete bg-status-complete-bg",
+    none: "border-status-manual-border text-status-manual bg-status-manual-bg",
   }[order.ocrStatus];
 
   const label = {
@@ -131,7 +128,7 @@ function OcrBadge({ order }: { order: Order }) {
   }[order.ocrStatus];
 
   return (
-    <Badge variant="outline" className={statusClass}>
+    <Badge variant="outline" className={config}>
       {label}
     </Badge>
   );

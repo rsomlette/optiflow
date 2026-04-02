@@ -21,13 +21,13 @@ export function ScreenGuard({ children }: { children: React.ReactNode }) {
 
   if (isTooSmall) {
     return (
-      <div className="h-screen flex items-center justify-center bg-gray-50 p-8 text-center">
+      <div className="h-screen flex items-center justify-center bg-background p-8 text-center">
         <div>
           <div className="text-4xl mb-4">📱↔️</div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">
+          <h2 className="text-lg font-semibold text-foreground mb-2">
             Please use a larger screen
           </h2>
-          <p className="text-sm text-gray-500 max-w-xs mx-auto">
+          <p className="text-sm text-muted-foreground max-w-xs mx-auto">
             OptiFlow is designed for tablets in landscape mode or desktop
             screens. Please rotate your device or use a larger display.
           </p>

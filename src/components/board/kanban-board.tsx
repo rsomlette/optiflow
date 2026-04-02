@@ -11,13 +11,14 @@ import {
   DragOverlay,
   type DragStartEvent,
 } from "@dnd-kit/core";
-import { COLUMNS } from "@/lib/constants";
+import { ORDER_STAGES } from "@/lib/types";
 import type { Order } from "@/lib/types";
 import { resolveTargetStage } from "@/lib/dnd-utils";
 import { useOrders } from "@/hooks/use-orders";
 import { useEmployees } from "@/hooks/use-employees";
 import { useOrderStore } from "@/stores/order-store";
 import { useAuthStore } from "@/stores/auth-store";
+import { useTheme } from "@/stores/theme-store";
 import { Header } from "@/components/layout/header";
 import { KanbanColumn } from "./kanban-column";
 import { KanbanCard } from "./kanban-card";
@@ -26,6 +27,7 @@ import { NewOrderDialog } from "@/components/orders/new-order-dialog";
 import { ScanReceivedDialog } from "@/components/scan/scan-received-dialog";
 
 export function KanbanBoard() {
+  const t = useTheme();
   const session = useAuthStore((s) => s.session);
   const { orders, isLoading } = useOrders();
   useEmployees();
@@ -43,15 +45,10 @@ export function KanbanBoard() {
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
+      activationConstraint: { distance: 8 },
     }),
     useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 200,
-        tolerance: 5,
-      },
+      activationConstraint: { delay: 200, tolerance: 5 },
     })
   );
 
@@ -66,12 +63,10 @@ export function KanbanBoard() {
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       setActiveOrder(null);
-
       if (!session) return;
 
       const orderId = event.active.id as string;
       const targetStage = resolveTargetStage(event.over);
-
       if (!targetStage) return;
 
       const order = orders.find((o) => o.id === orderId);
@@ -84,8 +79,8 @@ export function KanbanBoard() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="text-gray-400">Loading orders...</div>
+      <div className={`flex-1 flex items-center justify-center ${t.text.dimmed}`}>
+        Loading orders...
       </div>
     );
   }
@@ -103,11 +98,11 @@ export function KanbanBoard() {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex-1 overflow-hidden p-4">
-          <div className="grid grid-cols-5 gap-3 h-full">
-            {COLUMNS.map((column) => {
+        <div className={`flex-1 overflow-hidden ${t.spacing.section}`}>
+          <div className={`grid grid-cols-5 ${t.spacing.gap} h-full`}>
+            {ORDER_STAGES.map((stage, i) => {
               const columnOrders = orders
-                .filter((o) => o.stage === column.id)
+                .filter((o) => o.stage === stage)
                 .sort(
                   (a, b) =>
                     new Date(a.stageEnteredAt).getTime() -
@@ -115,8 +110,9 @@ export function KanbanBoard() {
                 );
               return (
                 <KanbanColumn
-                  key={column.id}
-                  column={column}
+                  key={stage}
+                  stage={stage}
+                  colors={t.columns[i]}
                   orders={columnOrders}
                   onCardClick={setSelectedOrder}
                 />
@@ -127,7 +123,7 @@ export function KanbanBoard() {
 
         <DragOverlay dropAnimation={null}>
           {activeOrder && (
-            <div className="rotate-2 scale-105 shadow-xl rounded-lg">
+            <div className={`rotate-2 scale-105 ${t.shadow.overlay} ${t.radius.card}`}>
               <KanbanCard
                 order={activeOrder}
                 columnId={activeOrder.stage}

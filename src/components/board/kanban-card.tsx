@@ -5,6 +5,7 @@ import type { Order, OrderStage } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { useElapsedTime } from "@/hooks/use-elapsed-time";
 import { useEmployeeStore } from "@/stores/employee-store";
+import { useTheme } from "@/stores/theme-store";
 
 interface KanbanCardProps {
   order: Order;
@@ -13,6 +14,7 @@ interface KanbanCardProps {
 }
 
 export function KanbanCard({ order, columnId, onClick }: KanbanCardProps) {
+  const t = useTheme();
   const elapsed = useElapsedTime(order.stageEnteredAt);
   const employees = useEmployeeStore((s) => s.employees);
   const assignee = employees.find((e) => e.id === order.assignedEmployeeId);
@@ -42,19 +44,19 @@ export function KanbanCard({ order, columnId, onClick }: KanbanCardProps) {
       {...attributes}
       {...listeners}
       onClick={onClick}
-      className="bg-white rounded-lg border border-gray-200 p-3 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-150 touch-manipulation select-none"
+      className={`${t.surface} ${t.radius.card} ${t.border.default} border ${t.spacing.card} ${t.shadow.card} cursor-grab active:cursor-grabbing hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-150 touch-manipulation select-none`}
     >
       <div className="flex items-start justify-between gap-2 mb-2">
-        <h3 className="font-semibold text-sm text-gray-900 truncate">
+        <h3 className={`font-semibold ${t.fontSize.body} ${t.text.primary} truncate`}>
           {order.clientName}
         </h3>
-        <span className="text-xs text-gray-400 whitespace-nowrap">
+        <span className={`${t.fontSize.caption} ${t.text.dimmed} whitespace-nowrap`}>
           {elapsed}
         </span>
       </div>
 
       {order.frameDescription && (
-        <p className="text-xs text-gray-500 mb-2 truncate">
+        <p className={`${t.fontSize.caption} ${t.text.muted} mb-2 truncate`}>
           {order.frameDescription}
         </p>
       )}
@@ -62,40 +64,40 @@ export function KanbanCard({ order, columnId, onClick }: KanbanCardProps) {
       <div className="flex items-center gap-1.5 flex-wrap">
         <OcrBadge order={order} />
         {order.lensType && (
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant="secondary" className={t.fontSize.caption}>
             {order.lensType}
           </Badge>
         )}
       </div>
 
       {assignee && (
-        <div className="mt-2 text-xs text-gray-400">{assignee.name}</div>
+        <div className={`mt-2 ${t.fontSize.caption} ${t.text.dimmed}`}>
+          {assignee.name}
+        </div>
       )}
     </div>
   );
 }
 
 function OcrBadge({ order }: { order: Order }) {
+  const t = useTheme();
   if (order.stage !== "pending_order") return null;
 
-  const config = {
-    pending: {
-      label: "OCR Pending",
-      className: "border-yellow-400 text-yellow-700 bg-yellow-50",
-    },
-    complete: {
-      label: "OCR Complete",
-      className: "border-green-400 text-green-700 bg-green-50",
-    },
-    none: {
-      label: "Manual",
-      className: "border-blue-400 text-blue-700 bg-blue-50",
-    },
+  const statusClass = {
+    pending: t.status.ocrPending,
+    complete: t.status.ocrComplete,
+    none: t.status.manual,
+  }[order.ocrStatus];
+
+  const label = {
+    pending: "OCR Pending",
+    complete: "OCR Complete",
+    none: "Manual",
   }[order.ocrStatus];
 
   return (
-    <Badge variant="outline" className={config.className}>
-      {config.label}
+    <Badge variant="outline" className={statusClass}>
+      {label}
     </Badge>
   );
 }

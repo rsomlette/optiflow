@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { PrescriptionCamera } from "@/components/orders/prescription-camera";
 import { useOrderStore } from "@/stores/order-store";
 import { useAuthStore } from "@/stores/auth-store";
+import { useTheme } from "@/stores/theme-store";
 import type { Order } from "@/lib/types";
 import { toast } from "sonner";
 
@@ -21,13 +22,12 @@ interface ScanReceivedDialogProps {
 }
 
 export function ScanReceivedDialog({ open, onClose }: ScanReceivedDialogProps) {
+  const t = useTheme();
   const session = useAuthStore((s) => s.session);
   const matchOrder = useOrderStore((s) => s.matchOrder);
   const moveOrder = useOrderStore((s) => s.moveOrder);
 
-  const [mode, setMode] = useState<"choose" | "scan" | "search" | "results">(
-    "choose"
-  );
+  const [mode, setMode] = useState<"choose" | "scan" | "search" | "results">("choose");
   const [searchQuery, setSearchQuery] = useState("");
   const [matches, setMatches] = useState<Order[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -46,16 +46,10 @@ export function ScanReceivedDialog({ open, onClose }: ScanReceivedDialogProps) {
 
   async function handleScanCapture(_dataUri: string) {
     if (!session) return;
-    // Mock: OCR returns a client name, we match against orders
     setIsSearching(true);
-    // Simulate OCR delay
     await new Promise((r) => setTimeout(r, 1000));
     const results = await matchOrder(session.tenantId, "");
-    // Filter to only orders in "ordered_awaiting_delivery" stage
-    const awaiting = results.filter(
-      (o) => o.stage === "ordered_awaiting_delivery"
-    );
-    setMatches(awaiting);
+    setMatches(results.filter((o) => o.stage === "ordered_awaiting_delivery"));
     setIsSearching(false);
     setMode("results");
   }
@@ -64,10 +58,7 @@ export function ScanReceivedDialog({ open, onClose }: ScanReceivedDialogProps) {
     if (!session || !searchQuery.trim()) return;
     setIsSearching(true);
     const results = await matchOrder(session.tenantId, searchQuery.trim());
-    const awaiting = results.filter(
-      (o) => o.stage === "ordered_awaiting_delivery"
-    );
-    setMatches(awaiting);
+    setMatches(results.filter((o) => o.stage === "ordered_awaiting_delivery"));
     setIsSearching(false);
     setMode("results");
   }
@@ -88,7 +79,7 @@ export function ScanReceivedDialog({ open, onClose }: ScanReceivedDialogProps) {
 
         {mode === "choose" && (
           <div className="space-y-3">
-            <p className="text-sm text-gray-500">
+            <p className={`${t.fontSize.body} ${t.text.muted}`}>
               Match a received delivery to an existing order
             </p>
             <div className="grid grid-cols-2 gap-3">
@@ -98,7 +89,7 @@ export function ScanReceivedDialog({ open, onClose }: ScanReceivedDialogProps) {
                 onClick={() => setMode("scan")}
               >
                 <span className="text-lg">📸</span>
-                <span className="text-sm">Scan Package</span>
+                <span className={t.fontSize.body}>Scan Package</span>
               </Button>
               <Button
                 variant="outline"
@@ -106,7 +97,7 @@ export function ScanReceivedDialog({ open, onClose }: ScanReceivedDialogProps) {
                 onClick={() => setMode("search")}
               >
                 <span className="text-lg">🔍</span>
-                <span className="text-sm">Search by Name</span>
+                <span className={t.fontSize.body}>Search by Name</span>
               </Button>
             </div>
           </div>
@@ -114,13 +105,11 @@ export function ScanReceivedDialog({ open, onClose }: ScanReceivedDialogProps) {
 
         {mode === "scan" && (
           <div className="space-y-3">
-            <p className="text-sm text-gray-500">
+            <p className={`${t.fontSize.body} ${t.text.muted}`}>
               Take a photo of the delivery package label
             </p>
             <PrescriptionCamera onCapture={handleScanCapture} />
-            <Button variant="ghost" onClick={() => setMode("choose")}>
-              Back
-            </Button>
+            <Button variant="ghost" onClick={() => setMode("choose")}>Back</Button>
           </div>
         )}
 
@@ -137,46 +126,42 @@ export function ScanReceivedDialog({ open, onClose }: ScanReceivedDialogProps) {
                 {isSearching ? "..." : "Search"}
               </Button>
             </div>
-            <Button variant="ghost" onClick={() => setMode("choose")}>
-              Back
-            </Button>
+            <Button variant="ghost" onClick={() => setMode("choose")}>Back</Button>
           </div>
         )}
 
         {mode === "results" && (
           <div className="space-y-3">
             {isSearching ? (
-              <div className="text-center text-sm text-gray-500 py-4">
+              <div className={`text-center ${t.fontSize.body} ${t.text.muted} py-4`}>
                 Searching...
               </div>
             ) : matches.length === 0 ? (
-              <div className="text-center text-sm text-gray-500 py-4">
+              <div className={`text-center ${t.fontSize.body} ${t.text.muted} py-4`}>
                 No matching orders awaiting delivery
               </div>
             ) : (
               <div className="space-y-2">
-                <p className="text-sm text-gray-500">
+                <p className={`${t.fontSize.body} ${t.text.muted}`}>
                   Select an order to mark as received:
                 </p>
                 {matches.map((order) => (
                   <button
                     key={order.id}
                     onClick={() => handleMoveOrder(order.id)}
-                    className="w-full text-left p-3 rounded-lg border hover:bg-gray-50 transition-colors"
+                    className={`w-full text-left ${t.spacing.card} ${t.radius.card} border ${t.interactive.hoverBg} transition-colors`}
                   >
-                    <div className="font-medium text-sm">
+                    <div className={`font-medium ${t.fontSize.body}`}>
                       {order.clientName}
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className={`${t.fontSize.caption} ${t.text.muted}`}>
                       {order.frameDescription} — {order.lensType}
                     </div>
                   </button>
                 ))}
               </div>
             )}
-            <Button variant="ghost" onClick={() => setMode("choose")}>
-              Back
-            </Button>
+            <Button variant="ghost" onClick={() => setMode("choose")}>Back</Button>
           </div>
         )}
       </DialogContent>

@@ -2,12 +2,14 @@
 
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "@/stores/theme-store";
 
 interface PrescriptionCameraProps {
   onCapture: (dataUri: string) => void;
 }
 
 export function PrescriptionCamera({ onCapture }: PrescriptionCameraProps) {
+  const t = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -39,7 +41,7 @@ export function PrescriptionCamera({ onCapture }: PrescriptionCameraProps) {
         className="w-full h-32 border-dashed border-2"
         onClick={() => fileInputRef.current?.click()}
       >
-        <span className="text-gray-500">
+        <span className={t.text.muted}>
           Tap to take a photo or upload an image
         </span>
       </Button>

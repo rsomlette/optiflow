@@ -15,6 +15,7 @@ import { PrescriptionCamera } from "./prescription-camera";
 import { PrescriptionPreview } from "./prescription-preview";
 import { useOrderStore } from "@/stores/order-store";
 import { useAuthStore } from "@/stores/auth-store";
+import { useTheme } from "@/stores/theme-store";
 import { OcrServiceImpl } from "@/services";
 import type { PrescriptionData, EntryMode, OcrStatus } from "@/lib/types";
 import { toast } from "sonner";
@@ -29,6 +30,7 @@ interface NewOrderDialogProps {
 type Step = "choose" | "camera" | "preview" | "form";
 
 export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
+  const t = useTheme();
   const session = useAuthStore((s) => s.session);
   const createOrder = useOrderStore((s) => s.createOrder);
 
@@ -39,7 +41,6 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
   const [ocrData, setOcrData] = useState<PrescriptionData | null>(null);
   const [ocrLoading, setOcrLoading] = useState(false);
 
-  // Form fields
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
   const [frameDescription, setFrameDescription] = useState("");
@@ -67,11 +68,7 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
 
   function handleChoose(mode: EntryMode) {
     setEntryMode(mode);
-    if (mode === "auto") {
-      setStep("camera");
-    } else {
-      setStep("form");
-    }
+    setStep(mode === "auto" ? "camera" : "form");
   }
 
   async function handleCapture(dataUri: string) {
@@ -118,11 +115,10 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
           <DialogTitle>New Order</DialogTitle>
         </DialogHeader>
 
-        {/* Step 1: Choose employee + mode */}
         {step === "choose" && (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className={`block ${t.fontSize.label} ${t.text.secondary} mb-1`}>
                 Assigned Employee
               </label>
               <EmployeeSelect
@@ -133,7 +129,7 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
 
             {assignedEmployeeId && (
               <div className="space-y-2">
-                <p className="text-sm text-gray-500">
+                <p className={`${t.fontSize.body} ${t.text.muted}`}>
                   How would you like to enter the prescription?
                 </p>
                 <div className="grid grid-cols-2 gap-3">
@@ -143,7 +139,7 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
                     onClick={() => handleChoose("auto")}
                   >
                     <span className="text-lg">📸</span>
-                    <span className="text-sm">Auto (Photo)</span>
+                    <span className={t.fontSize.body}>Auto (Photo)</span>
                   </Button>
                   <Button
                     variant="outline"
@@ -151,7 +147,7 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
                     onClick={() => handleChoose("manual")}
                   >
                     <span className="text-lg">✏️</span>
-                    <span className="text-sm">Manual Entry</span>
+                    <span className={t.fontSize.body}>Manual Entry</span>
                   </Button>
                 </div>
               </div>
@@ -159,10 +155,9 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
           </div>
         )}
 
-        {/* Step 2: Camera capture (auto mode) */}
         {step === "camera" && (
           <div className="space-y-4">
-            <p className="text-sm text-gray-500">
+            <p className={`${t.fontSize.body} ${t.text.muted}`}>
               Take a photo of the doctor&apos;s prescription
             </p>
             <PrescriptionCamera onCapture={handleCapture} />
@@ -172,7 +167,6 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
           </div>
         )}
 
-        {/* Step 3: Preview OCR results (auto mode) */}
         {step === "preview" && (
           <div className="space-y-4">
             <PrescriptionPreview
@@ -200,65 +194,49 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
           </div>
         )}
 
-        {/* Step 4: Client details form */}
         {step === "form" && (
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Client Name *
-              </label>
+            <FormField label="Client Name *">
               <Input
                 value={clientName}
                 onChange={(e) => setClientName(e.target.value)}
                 placeholder="Jean-Pierre Lefèvre"
               />
-            </div>
+            </FormField>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Phone
-              </label>
+            <FormField label="Phone">
               <Input
                 value={clientPhone}
                 onChange={(e) => setClientPhone(e.target.value)}
                 placeholder="+33 6 12 34 56 78"
                 type="tel"
               />
-            </div>
+            </FormField>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Frame
-              </label>
+            <FormField label="Frame">
               <Input
                 value={frameDescription}
                 onChange={(e) => setFrameDescription(e.target.value)}
                 placeholder="Ray-Ban RB5154 Black"
               />
-            </div>
+            </FormField>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Lens Type
-              </label>
+            <FormField label="Lens Type">
               <Input
                 value={lensType}
                 onChange={(e) => setLensType(e.target.value)}
                 placeholder="Progressive, Single Vision..."
               />
-            </div>
+            </FormField>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Notes
-              </label>
+            <FormField label="Notes">
               <Textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Any additional notes..."
                 rows={2}
               />
-            </div>
+            </FormField>
 
             <div className="flex gap-2">
               <Button
@@ -281,5 +259,23 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
         )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+function FormField({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  const t = useTheme();
+  return (
+    <div>
+      <label className={`block ${t.fontSize.label} ${t.text.secondary} mb-1`}>
+        {label}
+      </label>
+      {children}
+    </div>
   );
 }

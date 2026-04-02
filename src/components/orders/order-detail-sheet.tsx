@@ -12,9 +12,9 @@ import { Separator } from "@/components/ui/separator";
 import type { Order } from "@/lib/types";
 import { ORDER_STAGE_LABELS } from "@/lib/types";
 import { useElapsedTime } from "@/hooks/use-elapsed-time";
-import { useEmployeeStore } from "@/stores/employee-store";
 import { useOrderStore } from "@/stores/order-store";
 import { useAuthStore } from "@/stores/auth-store";
+import { useTheme } from "@/stores/theme-store";
 import { EmployeeSelect } from "@/components/employees/employee-select";
 import { toast } from "sonner";
 
@@ -73,6 +73,8 @@ function OrderDetailContent({
   onNotify: () => void;
   onAssign: (employeeId: string) => void;
 }) {
+  const t = useTheme();
+
   return (
     <div className="space-y-4">
       <StatusRow order={order} />
@@ -92,13 +94,10 @@ function OrderDetailContent({
       <Separator />
 
       <div>
-        <div className="text-xs font-medium text-gray-500 mb-1.5">
+        <div className={`${t.fontSize.caption} font-medium ${t.text.muted} mb-1.5`}>
           Assigned To
         </div>
-        <EmployeeSelect
-          value={order.assignedEmployeeId}
-          onChange={onAssign}
-        />
+        <EmployeeSelect value={order.assignedEmployeeId} onChange={onAssign} />
       </div>
 
       <Separator />
@@ -138,15 +137,18 @@ function StatusRow({ order }: { order: Order }) {
 }
 
 function InfoField({ label, value }: { label: string; value: string }) {
+  const t = useTheme();
+
   return (
     <div>
-      <div className="text-xs font-medium text-gray-500">{label}</div>
-      <div className="text-sm mt-0.5">{value}</div>
+      <div className={`${t.fontSize.caption} font-medium ${t.text.muted}`}>{label}</div>
+      <div className={`${t.fontSize.body} mt-0.5`}>{value}</div>
     </div>
   );
 }
 
 function PrescriptionTable({ order }: { order: Order }) {
+  const t = useTheme();
   const { prescriptionData: rx } = order;
   const hasData =
     rx.odSphere != null ||
@@ -158,58 +160,40 @@ function PrescriptionTable({ order }: { order: Order }) {
 
   return (
     <div>
-      <div className="text-xs font-medium text-gray-500 mb-1.5">
+      <div className={`${t.fontSize.caption} font-medium ${t.text.muted} mb-1.5`}>
         Prescription
       </div>
-      <div className="text-xs border rounded-lg overflow-hidden">
+      <div className={`${t.fontSize.caption} border ${t.radius.card} overflow-hidden`}>
         <table className="w-full">
           <thead>
-            <tr className="bg-gray-50">
-              <th className="px-3 py-1.5 text-left font-medium text-gray-500">
-                Eye
-              </th>
-              <th className="px-3 py-1.5 text-right font-medium text-gray-500">
-                SPH
-              </th>
-              <th className="px-3 py-1.5 text-right font-medium text-gray-500">
-                CYL
-              </th>
-              <th className="px-3 py-1.5 text-right font-medium text-gray-500">
-                AXE
-              </th>
-              <th className="px-3 py-1.5 text-right font-medium text-gray-500">
-                ADD
-              </th>
+            <tr className={t.surfaceMuted}>
+              <th className={`px-3 py-1.5 text-left font-medium ${t.text.muted}`}>Eye</th>
+              <th className={`px-3 py-1.5 text-right font-medium ${t.text.muted}`}>SPH</th>
+              <th className={`px-3 py-1.5 text-right font-medium ${t.text.muted}`}>CYL</th>
+              <th className={`px-3 py-1.5 text-right font-medium ${t.text.muted}`}>AXE</th>
+              <th className={`px-3 py-1.5 text-right font-medium ${t.text.muted}`}>ADD</th>
             </tr>
           </thead>
           <tbody>
             <tr className="border-t">
               <td className="px-3 py-1.5 font-medium">OD</td>
-              <td className="px-3 py-1.5 text-right">
-                {rx.odSphere ?? "—"}
-              </td>
-              <td className="px-3 py-1.5 text-right">
-                {rx.odCylinder ?? "—"}
-              </td>
+              <td className="px-3 py-1.5 text-right">{rx.odSphere ?? "—"}</td>
+              <td className="px-3 py-1.5 text-right">{rx.odCylinder ?? "—"}</td>
               <td className="px-3 py-1.5 text-right">{rx.odAxis ?? "—"}</td>
               <td className="px-3 py-1.5 text-right">{rx.odAdd ?? "—"}</td>
             </tr>
             <tr className="border-t">
               <td className="px-3 py-1.5 font-medium">OS</td>
-              <td className="px-3 py-1.5 text-right">
-                {rx.osSphere ?? "—"}
-              </td>
-              <td className="px-3 py-1.5 text-right">
-                {rx.osCylinder ?? "—"}
-              </td>
+              <td className="px-3 py-1.5 text-right">{rx.osSphere ?? "—"}</td>
+              <td className="px-3 py-1.5 text-right">{rx.osCylinder ?? "—"}</td>
               <td className="px-3 py-1.5 text-right">{rx.osAxis ?? "—"}</td>
               <td className="px-3 py-1.5 text-right">{rx.osAdd ?? "—"}</td>
             </tr>
           </tbody>
         </table>
         {rx.pd && (
-          <div className="border-t px-3 py-1.5 bg-gray-50">
-            <span className="font-medium text-gray-500">PD:</span> {rx.pd}mm
+          <div className={`border-t px-3 py-1.5 ${t.surfaceMuted}`}>
+            <span className={`font-medium ${t.text.muted}`}>PD:</span> {rx.pd}mm
           </div>
         )}
       </div>

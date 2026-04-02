@@ -1,6 +1,7 @@
 "use client";
 
 import type { PrescriptionData } from "@/lib/types";
+import { useTheme } from "@/stores/theme-store";
 
 interface PrescriptionPreviewProps {
   imageUrl: string;
@@ -13,34 +14,36 @@ export function PrescriptionPreview({
   data,
   isLoading,
 }: PrescriptionPreviewProps) {
+  const t = useTheme();
+
   return (
     <div className="space-y-3">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={imageUrl}
         alt="Prescription"
-        className="w-full max-h-48 object-contain rounded-lg border"
+        className={`w-full max-h-48 object-contain ${t.radius.card} border`}
       />
 
       {isLoading && (
-        <div className="text-center text-sm text-gray-500 py-2">
+        <div className={`text-center ${t.fontSize.body} ${t.text.muted} py-2`}>
           Processing prescription...
         </div>
       )}
 
       {data && !isLoading && (
-        <div className="text-xs border rounded-lg overflow-hidden">
-          <div className="bg-green-50 px-2 py-1 text-green-700 font-medium">
+        <div className={`${t.fontSize.caption} border ${t.radius.card} overflow-hidden`}>
+          <div className={`${t.status.ocrComplete} px-2 py-1 font-medium`}>
             OCR Results
           </div>
           <table className="w-full">
             <thead>
-              <tr className="bg-gray-50">
-                <th className="px-2 py-1 text-left text-gray-500">Eye</th>
-                <th className="px-2 py-1 text-right text-gray-500">SPH</th>
-                <th className="px-2 py-1 text-right text-gray-500">CYL</th>
-                <th className="px-2 py-1 text-right text-gray-500">AXE</th>
-                <th className="px-2 py-1 text-right text-gray-500">ADD</th>
+              <tr className={t.surfaceMuted}>
+                <th className={`px-2 py-1 text-left ${t.text.muted}`}>Eye</th>
+                <th className={`px-2 py-1 text-right ${t.text.muted}`}>SPH</th>
+                <th className={`px-2 py-1 text-right ${t.text.muted}`}>CYL</th>
+                <th className={`px-2 py-1 text-right ${t.text.muted}`}>AXE</th>
+                <th className={`px-2 py-1 text-right ${t.text.muted}`}>ADD</th>
               </tr>
             </thead>
             <tbody>
@@ -62,7 +65,7 @@ export function PrescriptionPreview({
           </table>
           {data.pd && (
             <div className="border-t px-2 py-1">
-              <span className="text-gray-500">PD:</span> {data.pd}mm
+              <span className={t.text.muted}>PD:</span> {data.pd}mm
             </div>
           )}
         </div>

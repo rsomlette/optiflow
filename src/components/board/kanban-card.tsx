@@ -1,7 +1,6 @@
 "use client";
 
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { useDraggable } from "@dnd-kit/core";
 import type { Order, OrderStage } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { useElapsedTime } from "@/hooks/use-elapsed-time";
@@ -23,18 +22,18 @@ export function KanbanCard({ order, columnId, onClick }: KanbanCardProps) {
     listeners,
     setNodeRef,
     transform,
-    transition,
     isDragging,
-  } = useSortable({
+  } = useDraggable({
     id: order.id,
     data: { type: "card", order, columnId },
   });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.4 : 1,
-  };
+  const style = transform
+    ? {
+        transform: `translate(${transform.x}px, ${transform.y}px)`,
+        opacity: isDragging ? 0.4 : 1,
+      }
+    : undefined;
 
   return (
     <div
@@ -43,7 +42,7 @@ export function KanbanCard({ order, columnId, onClick }: KanbanCardProps) {
       {...attributes}
       {...listeners}
       onClick={onClick}
-      className="bg-white rounded-lg border border-gray-200 p-3 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-150 touch-manipulation"
+      className="bg-white rounded-lg border border-gray-200 p-3 shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-150 touch-manipulation select-none"
     >
       <div className="flex items-start justify-between gap-2 mb-2">
         <h3 className="font-semibold text-sm text-gray-900 truncate">

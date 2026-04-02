@@ -1,10 +1,6 @@
 "use client";
 
 import { useDroppable } from "@dnd-kit/core";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 import type { Order } from "@/lib/types";
 import type { ColumnDefinition } from "@/lib/constants";
 import { KanbanCard } from "./kanban-card";
@@ -27,7 +23,7 @@ export function KanbanColumn({
 
   return (
     <div
-      className={`flex flex-col min-w-0 rounded-xl border-2 ${column.borderColor} ${column.bgColor} transition-colors ${
+      className={`flex flex-col min-w-0 min-h-0 h-full rounded-xl border-2 ${column.borderColor} ${column.bgColor} transition-colors ${
         isOver ? "ring-2 ring-blue-400 ring-offset-2" : ""
       }`}
     >
@@ -46,21 +42,16 @@ export function KanbanColumn({
 
       <div
         ref={setNodeRef}
-        className="flex-1 overflow-y-auto p-2 space-y-2 min-h-[200px]"
+        className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-2 space-y-2"
       >
-        <SortableContext
-          items={orders.map((o) => o.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          {orders.map((order) => (
-            <KanbanCard
-              key={order.id}
-              order={order}
-              columnId={column.id}
-              onClick={() => onCardClick(order)}
-            />
-          ))}
-        </SortableContext>
+        {orders.map((order) => (
+          <KanbanCard
+            key={order.id}
+            order={order}
+            columnId={column.id}
+            onClick={() => onCardClick(order)}
+          />
+        ))}
 
         {orders.length === 0 && (
           <div className="flex items-center justify-center h-24 text-sm text-gray-400">

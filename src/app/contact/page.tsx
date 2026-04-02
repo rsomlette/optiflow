@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { LinkButton } from "@/components/ui/link-button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
@@ -28,9 +29,9 @@ export default function ContactPage() {
         <Link href="/" className="text-2xl font-bold text-blue-700">
           OptiFlow
         </Link>
-        <Button variant="ghost" render={<Link href="/login" />}>
+        <LinkButton variant="ghost" href="/login">
           Sign In
-        </Button>
+        </LinkButton>
       </header>
 
       <main className="max-w-lg mx-auto px-6 py-16">

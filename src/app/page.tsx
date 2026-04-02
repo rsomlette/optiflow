@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { LinkButton } from "@/components/ui/link-button";
 
 export default function LandingPage() {
   return (
@@ -8,10 +7,10 @@ export default function LandingPage() {
       <header className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto">
         <div className="text-2xl font-bold text-blue-700">OptiFlow</div>
         <div className="flex gap-3">
-          <Button variant="ghost" render={<Link href="/contact" />}>
+          <LinkButton variant="ghost" href="/contact">
             Contact
-          </Button>
-          <Button render={<Link href="/login" />}>Sign In</Button>
+          </LinkButton>
+          <LinkButton href="/login">Sign In</LinkButton>
         </div>
       </header>
 
@@ -29,12 +28,12 @@ export default function LandingPage() {
             sync — on any tablet.
           </p>
           <div className="flex gap-4 justify-center">
-            <Button size="lg" render={<Link href="/contact" />}>
+            <LinkButton size="lg" href="/contact">
               Request a Demo
-            </Button>
-            <Button size="lg" variant="outline" render={<Link href="/login" />}>
+            </LinkButton>
+            <LinkButton size="lg" variant="outline" href="/login">
               Try It Now
-            </Button>
+            </LinkButton>
           </div>
         </div>
 

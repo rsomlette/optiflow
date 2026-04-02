@@ -30,7 +30,8 @@ export default function DashboardLayout({
 
   return (
     <ScreenGuard>
-      <div className="h-screen flex flex-col overflow-hidden bg-gray-50">
+      <style>{`html, body { overflow: hidden; height: 100%; }`}</style>
+      <div className="h-dvh flex flex-col overflow-hidden bg-gray-50 touch-manipulation">
         {children}
         <Toaster />
       </div>

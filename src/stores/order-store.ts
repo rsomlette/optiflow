@@ -9,6 +9,7 @@ const orderService = new OrderServiceImpl();
 interface OrderState {
   orders: Order[];
   isLoading: boolean;
+  newOrderIds: Set<string>;
   fetchOrders: (tenantId: string) => Promise<void>;
   createOrder: (tenantId: string, input: CreateOrderInput) => Promise<Order>;
   moveOrder: (
@@ -23,11 +24,13 @@ interface OrderState {
   ) => Promise<void>;
   archiveOrder: (tenantId: string, orderId: string) => Promise<void>;
   matchOrder: (tenantId: string, query: string) => Promise<Order[]>;
+  clearNewOrderId: (orderId: string) => void;
 }
 
 export const useOrderStore = create<OrderState>((set, get) => ({
   orders: [],
   isLoading: false,
+  newOrderIds: new Set(),
 
   fetchOrders: async (tenantId) => {
     set({ isLoading: true });
@@ -37,7 +40,9 @@ export const useOrderStore = create<OrderState>((set, get) => ({
 
   createOrder: async (tenantId, input) => {
     const order = await orderService.createOrder(tenantId, input);
-    set({ orders: [...get().orders, order] });
+    const newIds = new Set(get().newOrderIds);
+    newIds.add(order.id);
+    set({ orders: [...get().orders, order], newOrderIds: newIds });
     return order;
   },
 
@@ -68,5 +73,11 @@ export const useOrderStore = create<OrderState>((set, get) => ({
 
   matchOrder: async (tenantId, query) => {
     return orderService.matchOrderByQuery(tenantId, query);
+  },
+
+  clearNewOrderId: (orderId) => {
+    const newIds = new Set(get().newOrderIds);
+    newIds.delete(orderId);
+    set({ newOrderIds: newIds });
   },
 }));

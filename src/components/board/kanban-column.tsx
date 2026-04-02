@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import { useDroppable } from "@dnd-kit/core";
+import { AnimatePresence, motion } from "framer-motion";
 import type { Order, OrderStage } from "@/lib/types";
 import { ORDER_STAGE_LABELS } from "@/lib/types";
 import type { ColumnColors } from "@/lib/theme";
@@ -41,7 +42,7 @@ export function KanbanColumn({
   return (
     <div
       className={`flex flex-col min-w-0 min-h-0 h-full rounded-xl border-2 ${colors.border} ${colors.bg} transition-colors ${
-        isOver ? `ring-2 ${colors.ring} ring-offset-2` : ""
+        isOver ? `ring-2 ${colors.ring} ring-offset-2 animate-column-glow` : ""
       }`}
     >
       <div className="px-3 py-2.5 border-b border-gray-200/50">
@@ -66,19 +67,26 @@ export function KanbanColumn({
           onScroll={checkScroll}
           className="absolute inset-0 overflow-y-auto overscroll-contain p-2 space-y-2"
         >
-          {orders.map((order) => (
-            <KanbanCard
-              key={order.id}
-              order={order}
-              columnId={stage}
-              onClick={() => onCardClick(order)}
-            />
-          ))}
+          <AnimatePresence mode="popLayout">
+            {orders.map((order) => (
+              <KanbanCard
+                key={order.id}
+                order={order}
+                columnId={stage}
+                onClick={() => onCardClick(order)}
+              />
+            ))}
+          </AnimatePresence>
 
           {orders.length === 0 && (
-            <div className="flex items-center justify-center h-24 text-sm text-gray-400">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.3 }}
+              className={`flex items-center justify-center h-24 ${colors.text} opacity-40 text-sm`}
+            >
               No orders
-            </div>
+            </motion.div>
           )}
         </div>
 

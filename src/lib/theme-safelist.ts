@@ -100,4 +100,15 @@ export const _safelist = [
   "text-green-400", "bg-green-950/30", "border-green-800", "ring-green-500",
   "text-purple-400", "bg-purple-950/30", "border-purple-800", "ring-purple-500",
   "text-teal-400", "bg-teal-950/30", "border-teal-800", "ring-teal-500",
+
+  // ─── Animations ────────────────────────────────────────
+  "animate-column-glow", "animate-shimmer",
+
+  // ─── Hover variants ────────────────────────────────────
+  "hover:shadow-md", "hover:-translate-y-0.5",
+
+  // ─── Midnight dark surfaces ────────────────────────────
+  "text-slate-100", "text-slate-300", "text-slate-900",
+  "bg-slate-800", "bg-slate-900", "bg-slate-700",
+  "border-slate-700", "border-slate-600", "border-slate-700/50",
 ];

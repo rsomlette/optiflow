@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Dialog,
   DialogContent,
@@ -24,38 +26,62 @@ interface OrderDetailSheetProps {
 }
 
 export function OrderDetailSheet({ order, onClose }: OrderDetailSheetProps) {
+  const t = useTheme();
   const session = useAuthStore((s) => s.session);
   const archiveOrder = useOrderStore((s) => s.archiveOrder);
   const assignEmployee = useOrderStore((s) => s.assignEmployee);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   if (!order) return null;
 
   return (
-    <Dialog open={!!order} onOpenChange={() => onClose()}>
+    <Dialog open={!!order} onOpenChange={() => { if (!showSuccess) onClose(); }}>
       <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-lg">{order.clientName}</DialogTitle>
-        </DialogHeader>
+        <AnimatePresence mode="wait">
+          {showSuccess ? (
+            <motion.div
+              key="success"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-col items-center justify-center py-12"
+            >
+              <SuccessCheckmark />
+              <p className={`text-lg font-semibold ${t.text.primary}`}>Picked up!</p>
+              <p className={`${t.fontSize.body} ${t.text.muted}`}>{order.clientName}</p>
+            </motion.div>
+          ) : (
+            <motion.div key="detail" exit={{ opacity: 0, scale: 0.95 }}>
+              <DialogHeader>
+                <DialogTitle className="text-lg">{order.clientName}</DialogTitle>
+              </DialogHeader>
 
-        <OrderDetailContent
-          order={order}
-          onClose={onClose}
-          onArchive={async () => {
-            if (!session) return;
-            await archiveOrder(session.tenantId, order.id);
-            toast.success(`Order for ${order.clientName} marked as picked up`);
-            onClose();
-          }}
-          onNotify={() => {
-            toast.success(
-              `Notification sent to ${order.clientName}${order.clientPhone ? ` at ${order.clientPhone}` : ""}`
-            );
-          }}
-          onAssign={async (employeeId) => {
-            if (!session) return;
-            await assignEmployee(session.tenantId, order.id, employeeId);
-          }}
-        />
+              <OrderDetailContent
+                order={order}
+                onClose={onClose}
+                onArchive={async () => {
+                  if (!session) return;
+                  setShowSuccess(true);
+                  await archiveOrder(session.tenantId, order.id);
+                  toast.success(`Order for ${order.clientName} marked as picked up`);
+                  setTimeout(() => {
+                    setShowSuccess(false);
+                    onClose();
+                  }, 1500);
+                }}
+                onNotify={() => {
+                  toast.success(
+                    `Notification sent to ${order.clientName}${order.clientPhone ? ` at ${order.clientPhone}` : ""}`
+                  );
+                }}
+                onAssign={async (employeeId) => {
+                  if (!session) return;
+                  await assignEmployee(session.tenantId, order.id, employeeId);
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </DialogContent>
     </Dialog>
   );
@@ -198,5 +224,35 @@ function PrescriptionTable({ order }: { order: Order }) {
         )}
       </div>
     </div>
+  );
+}
+
+function SuccessCheckmark() {
+  const t = useTheme();
+
+  return (
+    <motion.div
+      initial={{ scale: 0 }}
+      animate={{ scale: 1 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}
+      className={`w-16 h-16 rounded-full ${t.brandBg} flex items-center justify-center mb-4`}
+    >
+      <svg
+        className={`w-8 h-8 ${t.brand}`}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={3}
+      >
+        <motion.path
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M5 13l4 4L19 7"
+        />
+      </svg>
+    </motion.div>
   );
 }

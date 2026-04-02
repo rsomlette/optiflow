@@ -169,6 +169,28 @@
     --ring: oklch(0.55 0.15 260);
 }
 
+/* ─── Animations ─── */
+
+@keyframes column-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-column-glow {
+  animation: column-glow 1.2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,215,0,0.15) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-out forwards;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -6,9 +6,17 @@ Tablet-optimized Kanban board for optician shops. Multi-tenant SaaS — each sho
 
 ```bash
 pnpm dev         # Dev server (turbopack)
-pnpm build       # Production build
-pnpm lint        # ESLint
-pnpm test        # Playwright e2e tests
+pnpm dev:web     # Next.js web dev server
+pnpm dev:api     # NestJS API dev server
+pnpm build       # Production build for web and API
+pnpm build:web   # Next.js production build
+pnpm build:api   # NestJS API production build
+pnpm lint        # ESLint for web and API
+pnpm lint:web    # Next.js ESLint
+pnpm lint:api    # NestJS API ESLint
+pnpm test        # Web e2e tests and API unit tests
+pnpm test:web    # Playwright e2e tests
+pnpm test:api    # NestJS API unit tests
 pnpm test:ui     # Playwright UI mode
 ```
 
@@ -83,24 +91,36 @@ pnpm test:ui     # Playwright UI mode
 ### Project Structure
 
 ```
-src/
-  app/              # Next.js routes — thin, mostly wiring
-  components/
-    ui/             # shadcn/ui primitives (don't modify these)
-    board/          # Kanban-specific components
-    orders/         # Order creation/detail components
-    scan/           # Scan/receive components
-    employees/      # Employee-related components
-    layout/         # App layout (header, etc.)
-  hooks/            # Custom React hooks
-  lib/              # Pure utilities, types, constants (no React)
-  services/         # Data access layer (interfaces + implementations)
-    mock/           # Mock implementations
-  stores/           # Zustand stores
-  messages/         # i18n translation files (en.json, fr.json)
-e2e/                # Playwright tests
-  pages/            # Page objects
+apps/web/           # Next.js web app
+  src/
+    app/            # Next.js routes — thin, mostly wiring
+    components/
+      ui/           # shadcn/ui primitives (don't modify these)
+      board/        # Kanban-specific components
+      orders/       # Order creation/detail components
+      scan/         # Scan/receive components
+      employees/    # Employee-related components
+      layout/       # App layout (header, etc.)
+    hooks/          # Custom React hooks
+    lib/            # Pure utilities, types, constants (no React)
+    services/       # Data access layer (interfaces + implementations)
+      mock/         # Mock implementations
+    stores/         # Zustand stores
+    messages/       # i18n translation files (en.json, fr.json)
+  e2e/              # Playwright tests
+    pages/          # Page objects
+apps/api/           # NestJS API
+  src/              # API modules, controllers, services, DTOs
+  test/             # API e2e tests
 ```
+
+### API (NestJS)
+
+- API-specific rules live in `apps/api/AGENTS.md`.
+- Keep controllers thin; business logic belongs in injectable services.
+- Use DTOs with validation for request bodies and query params.
+- Keep `/health` unauthenticated and dependency-light.
+- Run `pnpm --filter @optiflow/api type-check`, `pnpm --filter @optiflow/api lint`, and `pnpm --filter @optiflow/api test` after API changes when feasible.
 
 ### Multi-tenancy
 

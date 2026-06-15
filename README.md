@@ -32,11 +32,23 @@ When a client walks into your shop, the flow is simple:
 ## Getting Started
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser (best experienced on a tablet).
+
+The web app lives in `apps/web`.
+
+Run the API in another terminal:
+
+```bash
+pnpm dev:api
+```
+
+Health check: [http://localhost:4000/health](http://localhost:4000/health)
+
+The API lives in `apps/api`.
 
 ## Tech Stack
 
@@ -45,3 +57,4 @@ Open [http://localhost:3000](http://localhost:3000) in your browser (best experi
 - Tailwind CSS + shadcn/ui
 - @dnd-kit for touch-friendly drag & drop
 - Zustand for state management
+- NestJS API

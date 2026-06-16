@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -14,13 +14,15 @@ import { tokens } from "@/lib/theme";
 import { EmployeeSelect } from "@/components/employees/employee-select";
 import { PrescriptionCamera } from "./prescription-camera";
 import { PrescriptionPreview } from "./prescription-preview";
+import { OrderExtractionSummary } from "./order-extraction-summary";
 import { useOrderStore } from "@/stores/order-store";
 import { useAuthStore } from "@/stores/auth-store";
-import { OcrServiceImpl } from "@/services";
-import type { PrescriptionData, EntryMode, OcrStatus } from "@/lib/types";
+import { extractNewOrder } from "@/services/api/new-order-extraction-service";
+import type { ExtractionStatus, OrderExtractionResult } from "@/services/api/order-extraction-types";
+import type { EntryMode, OcrStatus } from "@/lib/types";
 import { toast } from "sonner";
 
-const ocrService = new OcrServiceImpl();
+const EXTRACTION_PROGRESS_MS = 40_000;
 
 interface NewOrderDialogProps {
   open: boolean;
@@ -37,8 +39,10 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
   const [entryMode, setEntryMode] = useState<EntryMode>("auto");
   const [assignedEmployeeId, setAssignedEmployeeId] = useState("");
   const [imageUrl, setImageUrl] = useState("");
-  const [ocrData, setOcrData] = useState<PrescriptionData | null>(null);
-  const [ocrLoading, setOcrLoading] = useState(false);
+  const [extractionStatus, setExtractionStatus] = useState<ExtractionStatus>("idle");
+  const [extractionResult, setExtractionResult] = useState<OrderExtractionResult | null>(null);
+  const [extractionError, setExtractionError] = useState("");
+  const [extractionProgress, setExtractionProgress] = useState(0);
 
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
@@ -51,8 +55,10 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
     setEntryMode("auto");
     setAssignedEmployeeId("");
     setImageUrl("");
-    setOcrData(null);
-    setOcrLoading(false);
+    setExtractionStatus("idle");
+    setExtractionResult(null);
+    setExtractionError("");
+    setExtractionProgress(0);
     setClientName("");
     setClientPhone("");
     setFrameDescription("");
@@ -67,28 +73,69 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
     setStep(mode === "auto" ? "camera" : "form");
   }
 
-  async function handleCapture(dataUri: string) {
+  useEffect(() => {
+    if (extractionStatus !== "loading") return;
+
+    const startedAt = Date.now();
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - startedAt;
+      setExtractionProgress(Math.min(95, Math.round((elapsed / EXTRACTION_PROGRESS_MS) * 95)));
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [extractionStatus]);
+
+  function handleCapture(dataUri: string, file: File) {
     setImageUrl(dataUri);
     setStep("preview");
-    setOcrLoading(true);
-    try {
-      const data = await ocrService.parsePrescriptionImage(dataUri);
-      setOcrData(data);
-    } finally {
-      setOcrLoading(false);
-    }
+    setExtractionStatus("loading");
+    setExtractionResult(null);
+    setExtractionError("");
+    setExtractionProgress(0);
+
+    void extractNewOrder(file)
+      .then((data) => {
+        console.info("/new extraction response", data);
+        setExtractionStatus("success");
+        setExtractionResult(data);
+        setExtractionProgress(100);
+        applyExtractionResult(data);
+      })
+      .catch((error: unknown) => {
+        console.error("/new extraction failed", error);
+        setExtractionStatus("error");
+        setExtractionError(error instanceof Error ? error.message : "Unknown extraction error");
+        setExtractionProgress(100);
+      });
+  }
+
+  function applyExtractionResult(result: OrderExtractionResult) {
+    const firstItem = result.items[0];
+
+    setClientName(result.client.fullName.value ?? "");
+    setLensType(firstItem?.label.value ?? "");
+    setFrameDescription(firstItem?.frame.value ?? "");
+    setNotes([
+      formatLensNote("OD correction", firstItem?.lenses.right.correction.value),
+      formatLensNote("OD verre", firstItem?.lenses.right.details.value),
+      formatLensNote("OG correction", firstItem?.lenses.left.correction.value),
+      formatLensNote("OG verre", firstItem?.lenses.left.details.value),
+    ].filter(Boolean).join("\n"));
+  }
+
+  function formatLensNote(label: string, value: string | null | undefined): string | null {
+    return value ? `${label}: ${value}` : null;
   }
 
   async function handleSubmit() {
-    if (!session || !clientName.trim() || !assignedEmployeeId) return;
+    if (!session || !clientName.trim() || (entryMode === "manual" && !assignedEmployeeId)) return;
 
-    let ocrStatus: OcrStatus = "none";
-    if (entryMode === "auto") ocrStatus = ocrData ? "complete" : "pending";
+    const ocrStatus: OcrStatus = entryMode === "auto" && extractionResult ? "complete" : "none";
 
     await createOrder(session.tenantId, {
       clientName: clientName.trim(),
       clientPhone: clientPhone.trim() || undefined,
-      prescriptionData: ocrData ?? {},
+      prescriptionData: {},
       prescriptionImageUrl: imageUrl || undefined,
       frameDescription: frameDescription.trim() || undefined,
       lensType: lensType.trim() || undefined,
@@ -111,27 +158,28 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
 
         {step === "choose" && (
           <div className="space-y-4">
+            <div className="space-y-2">
+              <p className={`${tokens.fontSize.body} text-text-muted`}>
+                How would you like to enter the prescription?
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <Button variant="outline" className="h-20 flex-col gap-1" onClick={() => handleChoose("auto")}>
+                  <span className="text-lg">📸</span>
+                  <span className={tokens.fontSize.body}>Auto (Photo)</span>
+                </Button>
+                <Button variant="outline" className="h-20 flex-col gap-1" onClick={() => handleChoose("manual")} disabled={!assignedEmployeeId}>
+                  <span className="text-lg">✏️</span>
+                  <span className={tokens.fontSize.body}>Manual Entry</span>
+                </Button>
+              </div>
+              {!assignedEmployeeId && (
+                <p className={`${tokens.fontSize.caption} text-text-muted`}>Assigned employee is only required for manual entry.</p>
+              )}
+            </div>
+
             <FormField label="Assigned Employee">
               <EmployeeSelect value={assignedEmployeeId} onChange={setAssignedEmployeeId} />
             </FormField>
-
-            {assignedEmployeeId && (
-              <div className="space-y-2">
-                <p className={`${tokens.fontSize.body} text-text-muted`}>
-                  How would you like to enter the prescription?
-                </p>
-                <div className="grid grid-cols-2 gap-3">
-                  <Button variant="outline" className="h-20 flex-col gap-1" onClick={() => handleChoose("auto")}>
-                    <span className="text-lg">📸</span>
-                    <span className={tokens.fontSize.body}>Auto (Photo)</span>
-                  </Button>
-                  <Button variant="outline" className="h-20 flex-col gap-1" onClick={() => handleChoose("manual")}>
-                    <span className="text-lg">✏️</span>
-                    <span className={tokens.fontSize.body}>Manual Entry</span>
-                  </Button>
-                </div>
-              </div>
-            )}
           </div>
         )}
 
@@ -145,13 +193,12 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
 
         {step === "preview" && (
           <div className="space-y-4">
-            <PrescriptionPreview imageUrl={imageUrl} data={ocrData} isLoading={ocrLoading} />
-            {!ocrLoading && (
-              <div className="flex gap-2">
-                <Button variant="ghost" onClick={() => { setImageUrl(""); setOcrData(null); setStep("camera"); }}>Retake</Button>
-                <Button className="flex-1" onClick={() => setStep("form")}>Continue</Button>
-              </div>
-            )}
+            <PrescriptionPreview imageUrl={imageUrl} />
+            <OrderExtractionSummary status={extractionStatus} result={extractionResult} error={extractionError} progress={extractionProgress} />
+            <div className="flex gap-2">
+              <Button variant="ghost" onClick={() => { setImageUrl(""); setExtractionStatus("idle"); setExtractionResult(null); setExtractionError(""); setExtractionProgress(0); setStep("camera"); }}>Retake</Button>
+              <Button className="flex-1" onClick={() => setStep("form")} disabled={extractionStatus === "loading" || extractionStatus === "idle"}>Continue</Button>
+            </div>
           </div>
         )}
 
@@ -174,7 +221,7 @@ export function NewOrderDialog({ open, onClose }: NewOrderDialogProps) {
             </FormField>
             <div className="flex gap-2">
               <Button variant="ghost" onClick={() => setStep(entryMode === "auto" ? "preview" : "choose")}>Back</Button>
-              <Button className="flex-1" onClick={handleSubmit} disabled={!clientName.trim() || !assignedEmployeeId}>Create Order</Button>
+              <Button className="flex-1" onClick={handleSubmit} disabled={!clientName.trim() || (entryMode === "manual" && !assignedEmployeeId)}>Create Order</Button>
             </div>
           </div>
         )}

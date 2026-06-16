@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 
 interface PrescriptionCameraProps {
-  onCapture: (dataUri: string) => void;
+  onCapture: (dataUri: string, file: File) => void;
 }
 
 export function PrescriptionCamera({ onCapture }: PrescriptionCameraProps) {
@@ -15,7 +15,7 @@ export function PrescriptionCamera({ onCapture }: PrescriptionCameraProps) {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      if (typeof reader.result === "string") onCapture(reader.result);
+      if (typeof reader.result === "string") onCapture(reader.result, file);
     };
     reader.readAsDataURL(file);
   }

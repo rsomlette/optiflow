@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { DEFAULT_THEME } from "@/lib/theme";
@@ -21,17 +21,9 @@ export const useThemeStore = create<ThemeState>()(
 );
 
 export function useThemeHydrated(): boolean {
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    const unsub = useThemeStore.persist.onFinishHydration(() => {
-      setHydrated(true);
-    });
-    if (useThemeStore.persist.hasHydrated()) {
-      setHydrated(true);
-    }
-    return unsub;
-  }, []);
-
-  return hydrated;
+  return useSyncExternalStore(
+    useThemeStore.persist.onFinishHydration,
+    useThemeStore.persist.hasHydrated,
+    () => false,
+  );
 }

@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  api:
+    name: API
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.6.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm --filter @optiflow/api type-check
+
+      - name: Lint
+        run: pnpm --filter @optiflow/api lint
+
+      - name: Unit tests
+        run: pnpm --filter @optiflow/api test
+
+      - name: Build
+        run: pnpm --filter @optiflow/api build
+
+      - name: E2E tests
+        run: pnpm --filter @optiflow/api test:e2e
+
+  web:
+    name: Web
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.6.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm --filter @optiflow/web lint
+
+      - name: Build
+        run: pnpm --filter @optiflow/web build
+
+      - name: Install Playwright browsers
+        run: pnpm --filter @optiflow/web exec playwright install --with-deps
+
+      - name: E2E tests
+        run: pnpm --filter @optiflow/web test

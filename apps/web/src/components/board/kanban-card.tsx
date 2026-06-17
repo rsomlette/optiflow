@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDraggable } from "@dnd-kit/core";
 import { motion } from "framer-motion";
 import type { Order, OrderStage } from "@/lib/types";
@@ -23,13 +23,9 @@ export function KanbanCard({ order, columnId, onClick }: KanbanCardProps) {
   const isNew = useOrderStore((s) => s.newOrderIds.has(order.id));
   const clearNewOrderId = useOrderStore((s) => s.clearNewOrderId);
 
-  const [showShimmer, setShowShimmer] = useState(isNew);
-
   useEffect(() => {
     if (isNew) {
-      setShowShimmer(true);
       const timer = setTimeout(() => {
-        setShowShimmer(false);
         clearNewOrderId(order.id);
       }, 1500);
       return () => clearTimeout(timer);
@@ -75,7 +71,7 @@ export function KanbanCard({ order, columnId, onClick }: KanbanCardProps) {
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
       className={`bg-surface ${tokens.radius.card} border border-border ${tokens.spacing.card} ${tokens.shadow.card} cursor-grab active:cursor-grabbing hover:shadow-md hover:-translate-y-0.5 transition-shadow duration-150 touch-manipulation select-none relative overflow-hidden`}
     >
-      {showShimmer && (
+      {isNew && (
         <div className="absolute inset-0 animate-shimmer pointer-events-none" />
       )}
 

@@ -4,15 +4,14 @@ import { useState, useEffect } from "react";
 import { formatElapsed } from "@/lib/utils";
 
 export function useElapsedTime(isoDate: string) {
-  const [elapsed, setElapsed] = useState(() => formatElapsed(isoDate));
+  const [, setTick] = useState(0);
 
   useEffect(() => {
-    setElapsed(formatElapsed(isoDate));
     const interval = setInterval(() => {
-      setElapsed(formatElapsed(isoDate));
+      setTick((tick) => tick + 1);
     }, 60000);
     return () => clearInterval(interval);
-  }, [isoDate]);
+  }, []);
 
-  return elapsed;
+  return formatElapsed(isoDate);
 }

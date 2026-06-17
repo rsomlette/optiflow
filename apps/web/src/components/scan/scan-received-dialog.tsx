@@ -34,7 +34,7 @@ export function ScanReceivedDialog({ open, onClose }: ScanReceivedDialogProps) {
   function reset() { setMode("choose"); setSearchQuery(""); setMatches([]); setIsSearching(false); }
   function handleClose() { reset(); onClose(); }
 
-  async function handleScanCapture(_dataUri: string) {
+  async function handleScanCapture() {
     if (!session) return;
     setIsSearching(true);
     await new Promise((r) => setTimeout(r, 1000));

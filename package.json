@@ -4,7 +4,7 @@
   "description": "Tablet-optimized Kanban board for optician shops",
   "private": true,
   "scripts": {
-    "dev": "pnpm dev:web",
+    "dev": "pnpm --parallel --filter @optiflow/web --filter @optiflow/api dev",
     "dev:web": "pnpm --filter @optiflow/web dev",
     "dev:api": "pnpm --filter @optiflow/api dev",
     "build": "pnpm --filter @optiflow/web build && pnpm --filter @optiflow/api build",

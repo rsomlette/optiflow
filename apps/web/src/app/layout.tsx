@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
@@ -33,7 +34,9 @@ export default async function RootLayout({
   return (
     <html lang={locale} className={cn("font-sans", geist.variable)} suppressHydrationWarning>
       <head>
-        <script
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `try{var t=JSON.parse(localStorage.getItem("optiflow-theme")||"{}");if(t.state&&t.state.themeKey)document.documentElement.setAttribute("data-theme",t.state.themeKey)}catch(e){}`,
           }}

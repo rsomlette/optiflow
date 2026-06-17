@@ -2,9 +2,9 @@ import type { PrescriptionData } from "@/lib/types";
 import type { OcrService } from "../types";
 
 export class MockOcrService implements OcrService {
-  async parsePrescriptionImage(
-    _imageDataUri: string
-  ): Promise<PrescriptionData> {
+  async parsePrescriptionImage(imageDataUri: string): Promise<PrescriptionData> {
+    void imageDataUri;
+
     // Simulate OCR processing delay
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
